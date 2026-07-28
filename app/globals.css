@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+:root {
+  /* Fondo + superficies — heredado de crm-cm */
+  --color-bg: #07080d;
+  --color-bg-2: #10131c;
+  --color-panel: rgba(18, 22, 32, 0.88);
+  --color-panel-2: rgba(255, 255, 255, 0.055);
+  --color-panel-3: rgba(255, 255, 255, 0.085);
+  --color-line: rgba(255, 255, 255, 0.12);
+  --color-line-2: rgba(255, 255, 255, 0.22);
+
+  /* Texto */
+  --color-text: #f6f7fb;
+  --color-muted: #9aa3b8;
+  --color-soft: #cad0df;
+
+  /* Acentos — degradés de crm-cm */
+  --color-cyan: #58e6ff;
+  --color-green: #80ffb5;
+  --color-lime: #d8ff63;
+  --color-coral: #ff6f61;
+  --color-amber: #ffc857;
+  --color-violet: #9b7cff;
+  --color-pink: #ff77bc;
+
+  --shadow-card: 0 24px 70px rgba(0, 0, 0, 0.38);
+
+  /* Radios — mas redondeado, estilo crm-meta-ads (pills + cards grandes) */
+  --radius-card: 20px;
+  --radius-pill: 999px;
+}
+
+@theme inline {
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+  --color-bg: var(--color-bg);
+  --color-bg-2: var(--color-bg-2);
+  --color-panel: var(--color-panel);
+  --color-panel-2: var(--color-panel-2);
+  --color-panel-3: var(--color-panel-3);
+  --color-line: var(--color-line);
+  --color-line-2: var(--color-line-2);
+  --color-text: var(--color-text);
+  --color-muted: var(--color-muted);
+  --color-soft: var(--color-soft);
+  --color-cyan: var(--color-cyan);
+  --color-green: var(--color-green);
+  --color-lime: var(--color-lime);
+  --color-coral: var(--color-coral);
+  --color-amber: var(--color-amber);
+  --color-violet: var(--color-violet);
+  --color-pink: var(--color-pink);
+  --font-sans: var(--font-manrope);
+  --font-mono: var(--font-jetbrains-mono);
+  --radius-card: var(--radius-card);
+  --shadow-card: var(--shadow-card);
+}
+
+body {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(135deg, #07080d 0%, #10131c 38%, #111926 68%, #090a10 100%);
+  background-size: 38px 38px, 38px 38px, auto;
+  color: var(--color-text);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
