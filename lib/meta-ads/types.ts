@@ -35,6 +35,12 @@ export interface AccountDetail {
   color: string;
 }
 
+export interface AdDetail {
+  msgs: number;
+  spend: number;
+  status: string;
+}
+
 export interface ExcursionData {
   msgs: number;
   spend: number;
@@ -47,6 +53,7 @@ export interface CampaignData {
   spend: number;
   brand: string | null;
   accounts: Record<string, AccountDetail>;
+  ads?: Record<string, AdDetail>;
 }
 
 export interface LoadedData {

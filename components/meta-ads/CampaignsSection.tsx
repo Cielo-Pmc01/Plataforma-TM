@@ -8,6 +8,7 @@ import type { AccountData, CampaignData, StatusFilter, PeriodKey, DateRange } fr
 const STATUS_CFG: Record<string, { label: string; color: string }> = {
   ACTIVE: { label: "Activa", color: "#4ade80" },
   PAUSED: { label: "Pausada", color: "#facc15" },
+  CAMPAIGN_PAUSED: { label: "Campaña pausada", color: "#facc15" },
   ACCOUNT_PAUSED: { label: "Cuenta pausada", color: "#f87171" },
   ACCOUNT_ISSUE: { label: "Error de cuenta", color: "#f87171" },
   WITH_ISSUES: { label: "Con errores", color: "#f97316" },
@@ -16,7 +17,12 @@ const STATUS_CFG: Record<string, { label: string; color: string }> = {
   IN_PROCESS: { label: "Procesando", color: "#94a3b8" },
   DELETED: { label: "Eliminada", color: "#64748b" },
   ARCHIVED: { label: "Archivada", color: "#64748b" },
+  UNKNOWN: { label: "Sin datos", color: "#94a3b8" },
 };
+
+function adStatusCfg(status: string) {
+  return STATUS_CFG[status] ?? { label: status, color: "#94a3b8" };
+}
 
 interface Props {
   period: PeriodKey;
@@ -215,6 +221,9 @@ export function CampaignsSection({
             const cpl = v.msgs > 0 ? v.spend / v.msgs : 0;
             const rowId = `c${i}`;
             const hasAccounts = Object.keys(v.accounts ?? {}).length > 0;
+            const adsEntries = Object.entries(v.ads ?? {}).sort((a, b) => b[1].spend - a[1].spend);
+            const hasAds = adsEntries.length > 0;
+            const hasDetail = hasAccounts || hasAds;
             const isOpen = openRows.has(rowId);
             const sc = statusCfg(name);
 
@@ -222,12 +231,12 @@ export function CampaignsSection({
               <div key={name}>
                 <div
                   className={`grid grid-cols-[1fr_70px_120px_90px_90px_80px] gap-2 px-4 py-2.5 border-b border-line/50 items-center text-xs ${
-                    hasAccounts ? "cursor-pointer hover:bg-panel-2" : ""
+                    hasDetail ? "cursor-pointer hover:bg-panel-2" : ""
                   }`}
-                  onClick={() => hasAccounts && toggleRow(rowId)}
+                  onClick={() => hasDetail && toggleRow(rowId)}
                 >
                   <div className="flex items-center gap-1.5 min-w-0">
-                    {hasAccounts ? (
+                    {hasDetail ? (
                       <span
                         className="text-[9px] text-muted flex-shrink-0 transition-transform"
                         style={{ transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}
@@ -258,16 +267,41 @@ export function CampaignsSection({
                   <span className="font-mono text-right">{fmtARS(v.spend)}</span>
                   <span className="font-mono text-right">{cpl > 0 ? fmtARS(cpl) : "—"}</span>
                 </div>
-                {hasAccounts && isOpen && (
+                {hasDetail && isOpen && (
                   <div className="flex flex-col gap-1.5 px-4 py-2.5 pl-10 bg-panel-2 border-b border-line/50">
-                    {Object.entries(v.accounts ?? {}).map(([accName, av]) => (
-                      <div key={accName} className="flex items-center gap-2.5">
-                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: av.color }} />
-                        <span className="text-[11px] text-soft flex-1">{accName}</span>
-                        <span className="font-mono text-[11px] text-text">{fmtN(av.msgs)} msgs</span>
-                        <span className="font-mono text-[11px] text-muted w-20 text-right">{fmtARS(av.spend)}</span>
+                    {hasAccounts &&
+                      Object.entries(v.accounts ?? {}).map(([accName, av]) => (
+                        <div key={accName} className="flex items-center gap-2.5">
+                          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: av.color }} />
+                          <span className="text-[11px] text-soft flex-1">{accName}</span>
+                          <span className="font-mono text-[11px] text-text">{fmtN(av.msgs)} msgs</span>
+                          <span className="font-mono text-[11px] text-muted w-20 text-right">{fmtARS(av.spend)}</span>
+                        </div>
+                      ))}
+                    {hasAds && (
+                      <div className={hasAccounts ? "mt-2 pt-2 border-t border-line/50 flex flex-col gap-1.5" : "flex flex-col gap-1.5"}>
+                        <span className="text-[10px] font-bold uppercase text-muted">Anuncios</span>
+                        {adsEntries.map(([adName, ad]) => {
+                          const asc = adStatusCfg(ad.status);
+                          return (
+                            <div key={adName} className="flex items-center gap-2.5">
+                              <span
+                                className="text-[9px] font-bold rounded-full px-1.5 py-0.5 flex-shrink-0 flex items-center gap-1"
+                                style={{ background: `${asc.color}22`, color: asc.color }}
+                              >
+                                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: asc.color }} />
+                                {asc.label}
+                              </span>
+                              <span className="text-[11px] text-soft flex-1 truncate" title={adName}>
+                                {adName}
+                              </span>
+                              <span className="font-mono text-[11px] text-text">{fmtN(ad.msgs)} msgs</span>
+                              <span className="font-mono text-[11px] text-muted w-20 text-right">{fmtARS(ad.spend)}</span>
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
+                    )}
                   </div>
                 )}
               </div>
