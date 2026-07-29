@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -16,5 +16,7 @@ export async function GET(request: Request) {
     );
   }
 
-  return NextResponse.redirect(new URL("/meta-ads", request.url));
+  const url = request.nextUrl.clone();
+  url.pathname = "/meta-ads";
+  return NextResponse.redirect(url);
 }
