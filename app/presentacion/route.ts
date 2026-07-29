@@ -16,7 +16,6 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const url = request.nextUrl.clone();
-  url.pathname = "/meta-ads";
-  return NextResponse.redirect(url);
+  const base = process.env.PUBLIC_SITE_URL || request.nextUrl.origin;
+  return NextResponse.redirect(new URL("/meta-ads", base));
 }
