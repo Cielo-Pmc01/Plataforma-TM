@@ -204,7 +204,7 @@ export function CampaignsSection({
       </div>
 
       <div className="rounded-card border border-line bg-panel overflow-hidden">
-        <div className="grid grid-cols-[1fr_70px_120px_90px_90px_80px] gap-2 px-4 py-2.5 border-b border-line text-[10px] font-bold uppercase text-muted">
+        <div className="hidden sm:grid grid-cols-[1fr_70px_120px_90px_90px_80px] gap-2 px-4 py-2.5 border-b border-line text-[10px] font-bold uppercase text-muted">
           <span>Campaña</span>
           <span>Marca</span>
           <span>Estado</span>
@@ -231,8 +231,53 @@ export function CampaignsSection({
 
             return (
               <div key={name}>
+                {/* Tarjeta mobile (< sm): apilada, sin columnas de ancho fijo que desborden. */}
                 <div
-                  className={`grid grid-cols-[1fr_70px_120px_90px_90px_80px] gap-2 px-4 py-2.5 border-b border-line/50 items-center text-xs ${
+                  className={`sm:hidden flex flex-col gap-1.5 px-4 py-3 border-b border-line/50 text-xs ${
+                    hasDetail ? "cursor-pointer hover:bg-panel-2" : ""
+                  }`}
+                  onClick={() => hasDetail && toggleRow(rowId)}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {hasDetail ? (
+                        <span
+                          className="text-[9px] text-muted flex-shrink-0 transition-transform"
+                          style={{ transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}
+                        >
+                          ▶
+                        </span>
+                      ) : (
+                        <span className="w-2.5 flex-shrink-0" />
+                      )}
+                      <span className="truncate font-semibold" title={name}>
+                        {name}
+                      </span>
+                    </div>
+                    <span
+                      className="text-[10px] font-bold rounded-full px-2 py-0.5 flex-shrink-0 flex items-center gap-1"
+                      style={{ background: `${sc.color}22`, color: sc.color }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: sc.color }} />
+                      {sc.label}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2.5 flex-wrap pl-4">
+                    <span
+                      className="text-[10px] font-bold rounded-full px-2 py-0.5"
+                      style={{ background: `${col}22`, color: col }}
+                    >
+                      {code}
+                    </span>
+                    <span className="font-mono text-[11px]">{fmtN(v.msgs)} msgs</span>
+                    <span className="font-mono text-[11px]">{fmtARS(v.spend)}</span>
+                    {cpl > 0 && <span className="font-mono text-[11px] text-muted">CPL {fmtARS(cpl)}</span>}
+                  </div>
+                </div>
+
+                {/* Fila desktop/tablet (>= sm): grilla de columnas. */}
+                <div
+                  className={`hidden sm:grid grid-cols-[1fr_70px_120px_90px_90px_80px] gap-2 px-4 py-2.5 border-b border-line/50 items-center text-xs ${
                     hasDetail ? "cursor-pointer hover:bg-panel-2" : ""
                   }`}
                   onClick={() => hasDetail && toggleRow(rowId)}
@@ -270,7 +315,7 @@ export function CampaignsSection({
                   <span className="font-mono text-right">{cpl > 0 ? fmtARS(cpl) : "—"}</span>
                 </div>
                 {hasDetail && isOpen && (
-                  <div className="flex flex-col gap-1.5 px-4 py-2.5 pl-10 bg-panel-2 border-b border-line/50">
+                  <div className="flex flex-col gap-1.5 px-4 py-2.5 pl-8 sm:pl-10 bg-panel-2 border-b border-line/50">
                     {hasAccounts &&
                       Object.entries(v.accounts ?? {}).map(([accName, av]) => (
                         <div key={accName} className="flex items-center gap-2.5">
