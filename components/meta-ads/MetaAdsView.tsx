@@ -32,36 +32,50 @@ function KPICard({ label, val, color, sub }: { label: string; val: string; color
 
 function AccountRow({ acc }: { acc: LoadedData["accounts"][number] }) {
   const spendFmt = acc.currency === "BRL" ? fmtBRL(acc.spend) : fmtARS(acc.spend);
-  const isActive = acc.status === "ACTIVE";
-  const isPaused = acc.status === "PAUSED";
-  const dotColor = isActive ? "var(--color-green)" : isPaused ? "var(--color-amber)" : "var(--color-muted)";
+  const statusColor =
+    acc.status === "ACTIVE"
+      ? "var(--color-green)"
+      : acc.status === "PAUSED"
+        ? "var(--color-amber)"
+        : acc.status === "DISABLED"
+          ? "var(--color-coral)"
+          : "var(--color-muted)";
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 px-3 py-2.5">
-      <div className="flex items-center gap-2.5 min-w-0">
-        <span
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-extrabold flex-shrink-0"
-          style={{ background: `${acc.color}22`, color: acc.color }}
-        >
-          {acc.name.slice(0, 2).toUpperCase()}
-        </span>
-        <div className="min-w-0">
-          <div className="text-xs font-bold text-text truncate">{acc.name}</div>
-          <div className="text-[10px] text-muted">{acc.currency}</div>
+    <div className="flex flex-col gap-2 rounded-xl border border-line bg-panel-2 px-3 py-2.5">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-extrabold flex-shrink-0"
+            style={{ background: `${acc.color}22`, color: acc.color }}
+          >
+            {acc.name.slice(0, 2).toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <div className="text-xs font-bold text-text truncate">{acc.name}</div>
+            <div className="text-[10px] text-muted">{acc.currency}</div>
+          </div>
         </div>
+        <span
+          className="text-[10px] font-bold rounded-full px-2 py-0.5 flex items-center gap-1 flex-shrink-0"
+          style={{ background: `${statusColor}22`, color: statusColor }}
+          title={acc.statusNote ?? undefined}
+        >
+          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: statusColor }} />
+          {acc.statusLabel}
+        </span>
       </div>
-      <div className="flex items-center gap-4 flex-shrink-0">
-        <div className="text-right">
+      <div className="flex items-center gap-4 pl-[42px]">
+        <div>
           <div className="text-[10px] text-muted">Inversión</div>
           <div className="font-mono text-sm font-semibold" style={{ color: acc.color }}>
             {spendFmt}
           </div>
         </div>
-        <div className="text-right">
+        <div>
           <div className="text-[10px] text-muted">Mensajes</div>
           <div className="font-mono text-sm">{fmtN(acc.msgs)}</div>
         </div>
-        <span className="w-2 h-2 rounded-full" style={{ background: dotColor }} />
       </div>
     </div>
   );
