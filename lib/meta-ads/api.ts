@@ -1,6 +1,19 @@
 import type { DateRange, LoadedData, PeriodKey } from "./types";
 
 const N8N_URL = process.env.NEXT_PUBLIC_N8N_META_ADS_URL!;
+const N8N_REFRESH_URL = process.env.NEXT_PUBLIC_N8N_META_ADS_REFRESH_URL!;
+
+export async function refreshMetaAds(accessToken: string): Promise<void> {
+  const res = await fetch(N8N_REFRESH_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({}),
+  });
+  if (!res.ok) throw new Error(`No se pudo disparar la actualización (${res.status})`);
+}
 
 export async function loadMetaAds(
   period: PeriodKey,

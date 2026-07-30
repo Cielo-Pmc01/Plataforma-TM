@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { loadMetaAds } from "@/lib/meta-ads/api";
+import { loadMetaAds, refreshMetaAds } from "@/lib/meta-ads/api";
 import { exportCSV } from "@/lib/meta-ads/csv";
 import { fmtN, fmtARS, fmtBRL } from "@/lib/meta-ads/formatters";
 import { BRAND_COLORS, PERIODS, TABLE_ROWS_INIT } from "@/lib/meta-ads/config";
@@ -32,36 +32,50 @@ function KPICard({ label, val, color, sub }: { label: string; val: string; color
 
 function AccountRow({ acc }: { acc: LoadedData["accounts"][number] }) {
   const spendFmt = acc.currency === "BRL" ? fmtBRL(acc.spend) : fmtARS(acc.spend);
-  const isActive = acc.status === "ACTIVE";
-  const isPaused = acc.status === "PAUSED";
-  const dotColor = isActive ? "var(--color-green)" : isPaused ? "var(--color-amber)" : "var(--color-muted)";
+  const statusColor =
+    acc.status === "ACTIVE"
+      ? "var(--color-green)"
+      : acc.status === "PAUSED"
+        ? "var(--color-amber)"
+        : acc.status === "DISABLED"
+          ? "var(--color-coral)"
+          : "var(--color-muted)";
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-panel-2 px-3 py-2.5">
-      <div className="flex items-center gap-2.5 min-w-0">
-        <span
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-extrabold flex-shrink-0"
-          style={{ background: `${acc.color}22`, color: acc.color }}
-        >
-          {acc.name.slice(0, 2).toUpperCase()}
-        </span>
-        <div className="min-w-0">
-          <div className="text-xs font-bold text-text truncate">{acc.name}</div>
-          <div className="text-[10px] text-muted">{acc.currency}</div>
+    <div className="flex flex-col gap-2 rounded-xl border border-line bg-panel-2 px-3 py-2.5">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-extrabold flex-shrink-0"
+            style={{ background: `${acc.color}22`, color: acc.color }}
+          >
+            {acc.name.slice(0, 2).toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <div className="text-xs font-bold text-text truncate">{acc.name}</div>
+            <div className="text-[10px] text-muted">{acc.currency}</div>
+          </div>
         </div>
+        <span
+          className="text-[10px] font-bold rounded-full px-2 py-0.5 flex items-center gap-1 flex-shrink-0"
+          style={{ background: `${statusColor}22`, color: statusColor }}
+          title={acc.statusNote ?? undefined}
+        >
+          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: statusColor }} />
+          {acc.statusLabel}
+        </span>
       </div>
-      <div className="flex items-center gap-4 flex-shrink-0">
-        <div className="text-right">
+      <div className="flex items-center gap-4 pl-[42px]">
+        <div>
           <div className="text-[10px] text-muted">Inversión</div>
           <div className="font-mono text-sm font-semibold" style={{ color: acc.color }}>
             {spendFmt}
           </div>
         </div>
-        <div className="text-right">
+        <div>
           <div className="text-[10px] text-muted">Mensajes</div>
           <div className="font-mono text-sm">{fmtN(acc.msgs)}</div>
         </div>
-        <span className="w-2 h-2 rounded-full" style={{ background: dotColor }} />
       </div>
     </div>
   );
@@ -82,6 +96,7 @@ export function MetaAdsView() {
   const [customUntil, setCustomUntil] = useState("");
   const [customRange, setCustomRange] = useState<DateRange | null>(null);
   const [customError, setCustomError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const refresh = useCallback(async (p: PeriodKey, range?: DateRange) => {
     setLoading(true);
@@ -107,6 +122,27 @@ export function MetaAdsView() {
     if (period === "custom") return;
     void refresh(period);
   }, [period, refresh]);
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    setError(null);
+    try {
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("Sesión no encontrada");
+      await refreshMetaAds(session.access_token);
+      // El sync real en n8n tarda unos segundos en escribir en Supabase —
+      // esperamos antes de volver a pedir los datos, si no llegamos primero.
+      await new Promise((resolve) => setTimeout(resolve, 20000));
+      await refresh(period, period === "custom" && customRange ? customRange : undefined);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error actualizando datos");
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   function applyCustomRange() {
     if (!customSince || !customUntil) {
@@ -185,6 +221,9 @@ export function MetaAdsView() {
           <h1 className="text-2xl font-extrabold mt-1">Performance de campañas</h1>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
+          <Button variant="secondary" onClick={handleRefresh} disabled={refreshing}>
+            {refreshing ? "Actualizando…" : "↻ Actualizar"}
+          </Button>
           {data && (
             <Button variant="secondary" onClick={() => exportCSV(data, period)}>
               ↓ Exportar CSV
