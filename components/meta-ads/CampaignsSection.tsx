@@ -221,7 +221,9 @@ export function CampaignsSection({
             const cpl = v.msgs > 0 ? v.spend / v.msgs : 0;
             const rowId = `c${i}`;
             const hasAccounts = Object.keys(v.accounts ?? {}).length > 0;
-            const adsEntries = Object.entries(v.ads ?? {}).sort((a, b) => b[1].spend - a[1].spend);
+            const adsEntriesAll = Object.entries(v.ads ?? {}).sort((a, b) => b[1].spend - a[1].spend);
+            const adsEntries =
+              campStatusFilter === "active" ? adsEntriesAll.filter(([, ad]) => ad.status === "ACTIVE") : adsEntriesAll;
             const hasAds = adsEntries.length > 0;
             const hasDetail = hasAccounts || hasAds;
             const isOpen = openRows.has(rowId);
