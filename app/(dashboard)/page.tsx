@@ -21,7 +21,7 @@ const SECTIONS = [
 
 export default function DashboardHome() {
   return (
-    <div className="max-w-5xl mx-auto p-8 flex flex-col gap-6">
+    <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
       <div>
         <p className="text-[12px] font-bold uppercase tracking-wide text-muted">Plataforma TM</p>
         <h1 className="text-2xl font-extrabold mt-1">¿Qué querés abrir?</h1>

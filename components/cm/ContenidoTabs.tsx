@@ -23,7 +23,7 @@ export function ContenidoTabs() {
   const [tab, setTab] = useState<Tab>("overview");
 
   return (
-    <div className="max-w-7xl mx-auto p-8 flex flex-col gap-6">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <p className="text-[12px] font-bold uppercase tracking-wide text-muted">Contenido (CM)</p>

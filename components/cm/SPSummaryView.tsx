@@ -11,7 +11,7 @@ export function SPSummaryView() {
   const { summary, loading, error, refetch } = usePipelineSummary();
 
   return (
-    <div className="max-w-4xl mx-auto p-8 flex flex-col gap-6">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
       <div>
         <p className="text-[12px] font-bold uppercase tracking-wide text-muted">Content Command Center</p>
         <h1 className="text-2xl font-extrabold mt-1">Resumen de contenido CM</h1>

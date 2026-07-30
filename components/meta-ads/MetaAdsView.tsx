@@ -178,7 +178,7 @@ export function MetaAdsView() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-8 flex flex-col gap-6">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <p className="text-[12px] font-bold uppercase tracking-wide text-muted">Meta Ads</p>
@@ -208,7 +208,7 @@ export function MetaAdsView() {
               Campañas
             </button>
           </div>
-          <div className="flex gap-1 p-1 rounded-full bg-panel-2 border border-line">
+          <div className="flex gap-1 p-1 rounded-full bg-panel-2 border border-line overflow-x-auto max-w-full">
             {PERIODS.map((p) => (
               <button
                 key={p.key}
