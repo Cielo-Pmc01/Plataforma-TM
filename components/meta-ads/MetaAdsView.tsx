@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { loadMetaAds } from "@/lib/meta-ads/api";
+import { loadMetaAds, refreshMetaAds } from "@/lib/meta-ads/api";
 import { exportCSV } from "@/lib/meta-ads/csv";
 import { fmtN, fmtARS, fmtBRL } from "@/lib/meta-ads/formatters";
 import { BRAND_COLORS, PERIODS, TABLE_ROWS_INIT } from "@/lib/meta-ads/config";
@@ -96,6 +96,7 @@ export function MetaAdsView() {
   const [customUntil, setCustomUntil] = useState("");
   const [customRange, setCustomRange] = useState<DateRange | null>(null);
   const [customError, setCustomError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const refresh = useCallback(async (p: PeriodKey, range?: DateRange) => {
     setLoading(true);
@@ -121,6 +122,27 @@ export function MetaAdsView() {
     if (period === "custom") return;
     void refresh(period);
   }, [period, refresh]);
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    setError(null);
+    try {
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error("Sesión no encontrada");
+      await refreshMetaAds(session.access_token);
+      // El sync real en n8n tarda unos segundos en escribir en Supabase —
+      // esperamos antes de volver a pedir los datos, si no llegamos primero.
+      await new Promise((resolve) => setTimeout(resolve, 20000));
+      await refresh(period, period === "custom" && customRange ? customRange : undefined);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error actualizando datos");
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   function applyCustomRange() {
     if (!customSince || !customUntil) {
@@ -199,6 +221,9 @@ export function MetaAdsView() {
           <h1 className="text-2xl font-extrabold mt-1">Performance de campañas</h1>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
+          <Button variant="secondary" onClick={handleRefresh} disabled={refreshing}>
+            {refreshing ? "Actualizando…" : "↻ Actualizar"}
+          </Button>
           {data && (
             <Button variant="secondary" onClick={() => exportCSV(data, period)}>
               ↓ Exportar CSV
