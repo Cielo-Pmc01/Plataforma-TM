@@ -21,7 +21,7 @@ export function BrandsRanking({ byBrandPeriod, onBrandClick }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex-1 flex flex-col gap-1.5 justify-between">
       {active.map(([brand, v], i) => {
         const col = BRAND_COLORS[brand] ?? "#7c827c";
         const code = BRAND_CODES[brand] ?? brand.slice(0, 3).toUpperCase();
