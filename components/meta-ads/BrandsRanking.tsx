@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { BRAND_COLORS, BRAND_CODES } from "@/lib/meta-ads/config";
 import { fmtN } from "@/lib/meta-ads/formatters";
 import type { BrandStats } from "@/lib/meta-ads/types";
+
+const ROWS_INIT = 6;
 
 interface Props {
   byBrandPeriod: Record<string, BrandStats>;
@@ -10,9 +13,12 @@ interface Props {
 }
 
 export function BrandsRanking({ byBrandPeriod, onBrandClick }: Props) {
+  const [expanded, setExpanded] = useState(false);
+
   const all = Object.entries(byBrandPeriod);
   const active = all.filter(([, v]) => v.msgs > 0 || v.spend > 0).sort((a, b) => b[1].msgs - a[1].msgs);
   const inactive = all.filter(([, v]) => v.msgs === 0 && v.spend === 0);
+  const visible = expanded ? active : active.slice(0, ROWS_INIT);
   const maxMsgs = Math.max(...active.map(([, v]) => v.msgs), 1);
   const total = active.reduce((s, [, v]) => s + v.msgs, 0);
 
@@ -21,8 +27,8 @@ export function BrandsRanking({ byBrandPeriod, onBrandClick }: Props) {
   }
 
   return (
-    <div className="flex-1 flex flex-col gap-1.5 justify-between">
-      {active.map(([brand, v], i) => {
+    <div className="flex-1 flex flex-col gap-1.5">
+      {visible.map(([brand, v], i) => {
         const col = BRAND_COLORS[brand] ?? "#7c827c";
         const code = BRAND_CODES[brand] ?? brand.slice(0, 3).toUpperCase();
         const pct = Math.round((v.msgs / maxMsgs) * 100);
@@ -53,6 +59,15 @@ export function BrandsRanking({ byBrandPeriod, onBrandClick }: Props) {
           </div>
         );
       })}
+
+      {active.length > ROWS_INIT && (
+        <button
+          className="text-xs font-bold text-cyan mt-0.5 self-center cursor-pointer hover:underline"
+          onClick={() => setExpanded((e) => !e)}
+        >
+          {expanded ? "Ver menos" : `Ver más (${active.length - ROWS_INIT} más)`}
+        </button>
+      )}
 
       <div className="flex items-center justify-between pt-2 mt-1 border-t border-line">
         <span className="text-[11px] font-bold text-muted uppercase">Total mensajes</span>
