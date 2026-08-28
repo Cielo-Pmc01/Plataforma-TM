@@ -318,7 +318,7 @@ export function MetaAdsView() {
               proporción 2:1 con el gráfico sin importar el ancho del contenedor, así
               esta fila queda alineada con el resto (KPIs, cuentas/excursiones/campañas)
               en vez de quedar más angosta y desalineada a la derecha. */}
-          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 items-stretch">
             <Card>
               <CardHeader>
                 <div>
@@ -326,7 +326,9 @@ export function MetaAdsView() {
                   <CardSub>Todas las marcas — año en curso</CardSub>
                 </div>
               </CardHeader>
-              <BrandsYearChart byBrandYear={data.byBrandYear ?? {}} />
+              <div className="flex-1 flex flex-col justify-center">
+                <BrandsYearChart byBrandYear={data.byBrandYear ?? {}} />
+              </div>
             </Card>
 
             <Card>
@@ -336,11 +338,13 @@ export function MetaAdsView() {
                   <CardSub>Período seleccionado</CardSub>
                 </div>
               </CardHeader>
-              <BrandsRanking byBrandPeriod={data.byBrandPeriod ?? {}} onBrandClick={setDrawerBrand} />
+              <div className="flex-1 flex flex-col">
+                <BrandsRanking byBrandPeriod={data.byBrandPeriod ?? {}} onBrandClick={setDrawerBrand} />
+              </div>
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
             <Card>
               <CardHeader>
                 <div>
@@ -349,7 +353,7 @@ export function MetaAdsView() {
                 </div>
                 <Badge label={String(accounts.length)} color="var(--color-cyan)" />
               </CardHeader>
-              <div className="flex flex-col gap-2">
+              <div className="flex-1 flex flex-col gap-2 justify-between">
                 {accounts.length === 0 && <div className="text-xs text-muted">Sin datos</div>}
                 {accounts.map((acc) => (
                   <AccountRow key={acc.id} acc={acc} />
@@ -364,7 +368,9 @@ export function MetaAdsView() {
                   <CardSub>Por mensajes generados</CardSub>
                 </div>
               </CardHeader>
-              <ExcursionsPanel byExcursion={data.byExcursion ?? {}} />
+              <div className="flex-1 flex flex-col">
+                <ExcursionsPanel byExcursion={data.byExcursion ?? {}} />
+              </div>
             </Card>
 
             <Card>
