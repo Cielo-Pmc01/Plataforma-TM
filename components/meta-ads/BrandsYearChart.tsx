@@ -83,7 +83,6 @@ export function BrandsYearChart({ byBrandYear }: Props) {
                 >
                   {segBrands.length > 0 ? (
                     segBrands.map((b, segIdx) => {
-                      const v = byBrandYear[b][m];
                       const segH = segHeights[segIdx];
                       const col = BRAND_COLORS[b] ?? "#7c827c";
                       const isHovered = hoveredSeg?.month === m && hoveredSeg?.brand === b;
@@ -99,14 +98,6 @@ export function BrandsYearChart({ byBrandYear }: Props) {
                             className="w-full h-full"
                             style={{ background: col, filter: isHovered ? "brightness(1.3)" : undefined }}
                           />
-                          {isHovered && (
-                            <div
-                              className={`absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-full font-mono font-bold text-text bg-panel-3 border border-line rounded px-2 py-1 whitespace-nowrap z-20 pointer-events-none ${big ? "text-xs" : "text-[10px]"}`}
-                            >
-                              <span style={{ color: col }}>{b}</span>
-                              <span className="text-muted"> — {fmtN(v)}</span>
-                            </div>
-                          )}
                         </div>
                       );
                     })
@@ -121,6 +112,39 @@ export function BrandsYearChart({ byBrandYear }: Props) {
             </div>
           );
         })}
+      </div>
+    );
+  }
+
+  function renderSidePanel(big: boolean) {
+    const width = big ? "w-[170px]" : "w-[110px]";
+    const heightClass = big ? "h-[340px]" : "h-[180px]";
+
+    if (!hoveredSeg) {
+      return (
+        <div className={`${width} ${heightClass} flex items-center justify-center border-l border-line pl-4`}>
+          <span className={`text-muted text-center leading-snug ${big ? "text-xs" : "text-[10px]"}`}>
+            Pasá el mouse sobre una marca del gráfico
+          </span>
+        </div>
+      );
+    }
+
+    const { month, brand } = hoveredSeg;
+    const value = byBrandYear[brand]?.[month] ?? 0;
+    const col = BRAND_COLORS[brand] ?? "#7c827c";
+
+    return (
+      <div className={`${width} ${heightClass} flex flex-col justify-center gap-2 border-l border-line pl-4`}>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: col }} />
+          <span className={`font-bold leading-tight ${big ? "text-sm" : "text-[11px]"}`} style={{ color: col }}>
+            {brand}
+          </span>
+        </div>
+        <div className={`${big ? "text-xs" : "text-[10px]"} text-muted`}>{MESES[month]} · 2026</div>
+        <div className={`font-mono font-bold text-text ${big ? "text-2xl" : "text-lg"}`}>{fmtN(value)}</div>
+        <div className={`${big ? "text-xs" : "text-[10px]"} text-muted`}>mensajes</div>
       </div>
     );
   }
@@ -152,7 +176,10 @@ export function BrandsYearChart({ byBrandYear }: Props) {
             ⤢ Ampliar
           </button>
         </div>
-        {renderBars(160, false)}
+        <div className="flex gap-3">
+          <div className="flex-1 min-w-0">{renderBars(160, false)}</div>
+          {renderSidePanel(false)}
+        </div>
         {renderLegend(topBrands)}
       </div>
 
@@ -175,7 +202,10 @@ export function BrandsYearChart({ byBrandYear }: Props) {
               </button>
             </div>
 
-            {renderBars(300, true)}
+            <div className="flex gap-4">
+              <div className="flex-1 min-w-0">{renderBars(300, true)}</div>
+              {renderSidePanel(true)}
+            </div>
             {renderLegend(allBrandsWithData)}
           </div>
         </div>
