@@ -42,10 +42,21 @@ export function BrandsYearChart({ byBrandYear }: Props) {
       <div className={`flex items-end gap-2 ${big ? "h-[340px]" : "h-[180px]"}`}>
         {MESES.map((mes, m) => {
           const total = monthTotals[m];
-          const barH = Math.round((total / maxMonth) * heightPx);
           const isCur = m === curMonth;
           const isFuture = m > curMonth;
           const segBrands = brands.filter((b) => (byBrandYear[b]?.[m] ?? 0) > 0);
+
+          // Altura mínima por franja para que las marcas con pocos mensajes
+          // (meses bajos como sep) sigan siendo hoveables — si no, quedan de 1-2px
+          // y el mouse "engancha" la franja de al lado en vez de la que se ve.
+          const MIN_SEG = big ? 4 : 2;
+          const segHeights = segBrands.map((b) =>
+            Math.max(Math.round((byBrandYear[b][m] / maxMonth) * heightPx), MIN_SEG),
+          );
+          const barH =
+            segBrands.length > 0
+              ? Math.max(segHeights.reduce((s, h) => s + h, 0), Math.round((total / maxMonth) * heightPx))
+              : Math.round((total / maxMonth) * heightPx);
 
           return (
             <div
@@ -71,9 +82,9 @@ export function BrandsYearChart({ byBrandYear }: Props) {
                   style={{ height: barH, boxShadow: isCur ? "0 0 12px rgba(194,247,75,.3)" : undefined }}
                 >
                   {segBrands.length > 0 ? (
-                    segBrands.map((b) => {
+                    segBrands.map((b, segIdx) => {
                       const v = byBrandYear[b][m];
-                      const segH = Math.round((v / maxMonth) * heightPx);
+                      const segH = segHeights[segIdx];
                       const col = BRAND_COLORS[b] ?? "#7c827c";
                       const isHovered = hoveredSeg?.month === m && hoveredSeg?.brand === b;
                       return (
