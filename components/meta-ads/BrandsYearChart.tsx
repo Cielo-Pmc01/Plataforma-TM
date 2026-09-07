@@ -8,8 +8,15 @@ interface Props {
   byBrandYear: Record<string, number[]>;
 }
 
+interface HoveredSeg {
+  month: number;
+  brand: string;
+}
+
 export function BrandsYearChart({ byBrandYear }: Props) {
   const [hoveredMonth, setHoveredMonth] = useState<number | null>(null);
+  const [hoveredSeg, setHoveredSeg] = useState<HoveredSeg | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   const brands = Object.keys(byBrandYear);
   const monthTotals = new Array(12).fill(0) as number[];
@@ -21,32 +28,24 @@ export function BrandsYearChart({ byBrandYear }: Props) {
   const maxMonth = Math.max(...monthTotals, 1);
   const curMonth = new Date().getMonth();
 
-  const topBrands = Object.entries(byBrandYear)
+  const allBrandsWithData = Object.entries(byBrandYear)
     .filter(([, v]) => v.reduce((s, n) => s + n, 0) > 0)
-    .sort((a, b) => b[1].reduce((s, n) => s + n, 0) - a[1].reduce((s, n) => s + n, 0))
-    .slice(0, 6);
+    .sort((a, b) => b[1].reduce((s, n) => s + n, 0) - a[1].reduce((s, n) => s + n, 0));
+  const topBrands = allBrandsWithData.slice(0, 6);
 
   if (monthTotals.every((v) => v === 0)) {
     return <div className="text-xs text-muted py-6 text-center">Sin datos del año</div>;
   }
 
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-end gap-2 h-[180px]">
+  function renderBars(heightPx: number, big: boolean) {
+    return (
+      <div className={`flex items-end gap-2 ${big ? "h-[340px]" : "h-[180px]"}`}>
         {MESES.map((mes, m) => {
           const total = monthTotals[m];
-          const barH = Math.round((total / maxMonth) * 160);
+          const barH = Math.round((total / maxMonth) * heightPx);
           const isCur = m === curMonth;
           const isFuture = m > curMonth;
-
-          const segs = brands
-            .filter((b) => (byBrandYear[b]?.[m] ?? 0) > 0)
-            .map((b) => {
-              const v = byBrandYear[b][m];
-              const segH = Math.round((v / maxMonth) * 160);
-              const col = BRAND_COLORS[b] ?? "#7c827c";
-              return <div key={b} style={{ height: segH, background: col, flexShrink: 0 }} />;
-            });
+          const segBrands = brands.filter((b) => (byBrandYear[b]?.[m] ?? 0) > 0);
 
           return (
             <div
@@ -54,11 +53,16 @@ export function BrandsYearChart({ byBrandYear }: Props) {
               className="flex-1 flex flex-col items-center gap-1.5 relative"
               style={{ opacity: isFuture ? 0.35 : 1 }}
               onMouseEnter={() => setHoveredMonth(m)}
-              onMouseLeave={() => setHoveredMonth(null)}
+              onMouseLeave={() => {
+                setHoveredMonth(null);
+                setHoveredSeg(null);
+              }}
             >
-              <div className="w-full flex flex-col justify-end h-[160px] relative">
-                {hoveredMonth === m && (
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-text bg-panel-3 border border-line rounded px-1.5 py-0.5 whitespace-nowrap z-10">
+              <div className={`w-full flex flex-col justify-end relative`} style={{ height: heightPx }}>
+                {hoveredMonth === m && !hoveredSeg && (
+                  <div
+                    className={`absolute -top-6 left-1/2 -translate-x-1/2 font-mono font-bold text-text bg-panel-3 border border-line rounded px-1.5 py-0.5 whitespace-nowrap z-10 pointer-events-none ${big ? "text-xs" : "text-[10px]"}`}
+                  >
                     {fmtN(total)}
                   </div>
                 )}
@@ -66,17 +70,54 @@ export function BrandsYearChart({ byBrandYear }: Props) {
                   className="w-full flex flex-col-reverse rounded-t-sm overflow-hidden"
                   style={{ height: barH, boxShadow: isCur ? "0 0 12px rgba(194,247,75,.3)" : undefined }}
                 >
-                  {segs.length > 0 ? segs : <div style={{ height: Math.max(barH, 2), background: "rgba(255,255,255,.06)" }} />}
+                  {segBrands.length > 0 ? (
+                    segBrands.map((b) => {
+                      const v = byBrandYear[b][m];
+                      const segH = Math.round((v / maxMonth) * heightPx);
+                      const col = BRAND_COLORS[b] ?? "#7c827c";
+                      const isHovered = hoveredSeg?.month === m && hoveredSeg?.brand === b;
+                      return (
+                        <div
+                          key={b}
+                          className="relative w-full flex-shrink-0"
+                          style={{ height: segH }}
+                          onMouseEnter={() => setHoveredSeg({ month: m, brand: b })}
+                          onMouseLeave={() => setHoveredSeg(null)}
+                        >
+                          <div
+                            className="w-full h-full"
+                            style={{ background: col, filter: isHovered ? "brightness(1.3)" : undefined }}
+                          />
+                          {isHovered && (
+                            <div
+                              className={`absolute -top-1 left-1/2 -translate-x-1/2 -translate-y-full font-mono font-bold text-text bg-panel-3 border border-line rounded px-2 py-1 whitespace-nowrap z-20 pointer-events-none ${big ? "text-xs" : "text-[10px]"}`}
+                            >
+                              <span style={{ color: col }}>{b}</span>
+                              <span className="text-muted"> — {fmtN(v)}</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div style={{ height: Math.max(barH, 2), background: "rgba(255,255,255,.06)" }} />
+                  )}
                 </div>
               </div>
-              <span className={`text-[10px] ${isCur ? "font-bold text-lime" : "text-muted"}`}>{mes}</span>
+              <span className={`${big ? "text-xs" : "text-[10px]"} ${isCur ? "font-bold text-lime" : "text-muted"}`}>
+                {mes}
+              </span>
             </div>
           );
         })}
       </div>
+    );
+  }
 
+  function renderLegend(brandList: [string, number[]][]) {
+    return (
       <div className="flex flex-wrap gap-x-3 gap-y-1.5 pt-2 border-t border-line">
-        {topBrands.map(([brand]) => {
+        {brandList.map(([brand]) => {
           const col = BRAND_COLORS[brand] ?? "#7c827c";
           return (
             <span key={brand} className="inline-flex items-center gap-1.5 text-[10px] text-muted">
@@ -86,6 +127,48 @@ export function BrandsYearChart({ byBrandYear }: Props) {
           );
         })}
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="flex flex-col gap-3">
+        <div className="flex justify-end -mt-1 -mb-1">
+          <button
+            onClick={() => setExpanded(true)}
+            className="text-[11px] font-bold text-cyan cursor-pointer hover:underline flex items-center gap-1"
+          >
+            ⤢ Ampliar
+          </button>
+        </div>
+        {renderBars(160, false)}
+        {renderLegend(topBrands)}
+      </div>
+
+      {expanded && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-6"
+          onClick={(e) => e.target === e.currentTarget && setExpanded(false)}
+        >
+          <div className="w-full max-w-4xl bg-panel border border-line rounded-2xl p-6 flex flex-col gap-5">
+            <div className="flex items-center gap-3">
+              <div className="flex-1">
+                <div className="text-sm font-bold text-text">Mensajes por mes</div>
+                <div className="text-[11px] text-muted">Todas las marcas — año en curso</div>
+              </div>
+              <button
+                onClick={() => setExpanded(false)}
+                className="w-7 h-7 rounded-full border border-line text-muted hover:text-soft cursor-pointer flex items-center justify-center"
+              >
+                ✕
+              </button>
+            </div>
+
+            {renderBars(300, true)}
+            {renderLegend(allBrandsWithData)}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
