@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const SECTIONS = [
   { href: "/meta-ads", label: "Meta Ads", activeClass: "bg-panel-3 text-cyan" },
   { href: "/contenido", label: "Contenido CM", activeClass: "bg-panel-3 text-violet" },
+  { href: "/anuncios", label: "Anuncios", activeClass: "bg-panel-3 text-lime" },
 ];
 
 export function HeaderNav() {
