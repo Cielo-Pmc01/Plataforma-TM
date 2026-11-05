@@ -14,7 +14,7 @@ export default async function AgentePage() {
   const { data, error } = await supabase
     .schema("meta_ads")
     .from("chat_agente")
-    .select("id, creado_at, rol, texto, estado, en_respuesta_a")
+    .select("id, creado_at, rol, texto, estado, en_respuesta_a, tipo, permiso_id")
     .order("id", { ascending: false })
     .limit(100);
 
