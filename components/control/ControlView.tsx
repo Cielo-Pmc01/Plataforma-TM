@@ -70,7 +70,7 @@ export function ControlView({ data }: { data: ControlData }) {
       <Seccion
         id="salud"
         titulo="Salud de las campañas activas"
-        bajada="La referencia es el promedio de 30 días de cada campaña hasta que cargues objetivos. El piso de aprendizaje es el presupuesto diario mínimo para unas 50 conversaciones por semana."
+        bajada="Cada campaña se compara con su objetivo de costo por conversación (o con su promedio de 30 días si todavía no tiene). El piso de aprendizaje es el presupuesto diario mínimo para unas 50 conversaciones por semana."
       >
         <SaludTabla salud={data.salud} />
       </Seccion>

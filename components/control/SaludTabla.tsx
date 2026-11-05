@@ -2,7 +2,7 @@ import type { SaludCampana } from "@/lib/control/data";
 import { TONO_COLOR, money, num } from "@/lib/control/format";
 import { FaseChip } from "./FaseChip";
 
-function Delta({ actual, referencia }: { actual: number | null; referencia: number | null }) {
+function Delta({ actual, referencia, esObjetivo }: { actual: number | null; referencia: number | null; esObjetivo: boolean }) {
   if (actual === null || referencia === null || referencia === 0) return <span className="text-muted">sin referencia</span>;
   const d = actual / referencia - 1;
   const color = d > 0.6 ? TONO_COLOR.critico : d > 0.3 ? TONO_COLOR.atencion : d <= 0 ? TONO_COLOR.ok : "var(--color-soft)";
@@ -10,7 +10,7 @@ function Delta({ actual, referencia }: { actual: number | null; referencia: numb
   return (
     <span className="tabular" style={{ color }}>
       {signo}
-      {Math.round(d * 100)}% vs {money(referencia)}
+      {Math.round(d * 100)}% vs {esObjetivo ? "objetivo" : "promedio"} {money(referencia)}
     </span>
   );
 }
@@ -72,7 +72,7 @@ export function SaludTabla({ salud }: { salud: SaludCampana[] }) {
                   <td className="tabular px-3 py-3 text-right">{num(s.conversaciones_7d)}</td>
                   <td className="px-3 py-3">
                     <div className="tabular font-semibold">{s.costo_conv_7d === null ? "sin conversaciones" : money(s.costo_conv_7d)}</div>
-                    <div className="text-[12px]"><Delta actual={s.costo_conv_7d} referencia={s.costo_referencia} /></div>
+                    <div className="text-[12px]"><Delta actual={s.costo_conv_7d} referencia={s.costo_referencia} esObjetivo={!!s.referencia_es_objetivo} /></div>
                   </td>
                   <td className="tabular px-3 py-3 text-right" style={{ color: freqColor }}>{num(s.frecuencia_7d, 2)}</td>
                   <td className="px-4 py-3"><PisoBar presupuesto={s.presupuesto_diario} piso={s.piso_aprendizaje} /></td>
@@ -101,7 +101,7 @@ export function SaludTabla({ salud }: { salud: SaludCampana[] }) {
             <p className="mt-3 text-[13px]">
               <span className="tabular font-semibold">{s.costo_conv_7d === null ? "Sin conversaciones" : money(s.costo_conv_7d)}</span>
               <span className="text-muted"> por conversación, </span>
-              <Delta actual={s.costo_conv_7d} referencia={s.costo_referencia} />
+              <Delta actual={s.costo_conv_7d} referencia={s.costo_referencia} esObjetivo={!!s.referencia_es_objetivo} />
             </p>
             <div className="mt-3"><PisoBar presupuesto={s.presupuesto_diario} piso={s.piso_aprendizaje} /></div>
           </li>
