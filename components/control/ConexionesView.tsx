@@ -11,12 +11,6 @@ const COLUMNAS: { clave: string; titulo: string }[] = [
   { clave: "pixel", titulo: "Píxel" },
 ];
 
-const PRIORIDAD: Record<number, string> = {
-  1: "Marcas en foco",
-  2: "Marcas activas",
-  3: "Orden del portafolio",
-};
-
 function color(ok: EstadoChequeo | undefined): string {
   if (ok === true) return "var(--color-green)";
   if (ok === "parcial") return "var(--color-amber)";
@@ -70,37 +64,136 @@ function Seccion({ id, titulo, bajada, children }: { id: string; titulo: string;
   );
 }
 
+// Etiqueta corta para cada problema (la explicación larga queda en el detalle)
+function etiqueta(x: Pendiente): string {
+  const p = x.problema;
+  if (p.startsWith("Deuda")) return "Deuda " + (p.match(/\$[\d.]+/)?.[0] ?? "");
+  if (p.startsWith("Instagram conectado")) return "Falta Instagram";
+  if (p.startsWith("WhatsApp API: Sin cuenta")) return "Falta WhatsApp API";
+  if (p.startsWith("WhatsApp API: La cuenta no tiene")) return "WhatsApp sin número";
+  if (p.startsWith("WhatsApp API")) return "WhatsApp no visible";
+  if (p.includes("rechazado")) return "Nombre WA rechazado";
+  if (p.includes("sin nombre cargado")) return "Nombre WA sin cargar";
+  if (p.startsWith("Calidad")) return "Calidad WA baja";
+  if (p.startsWith("Sin acceso")) return "Sin acceso del sistema";
+  if (p.includes("cuentas sin nombre")) return p.split(" (")[0];
+  if (p.startsWith("Instagram en el portafolio")) return "IG sin vincular a una página";
+  if (p.startsWith("Cuenta de prueba")) return "Cuenta de prueba";
+  if (p.includes("vacía")) return "Cuenta sin número";
+  if (p.includes("sin marca asignada")) return "Sin marca asignada";
+  if (p.startsWith("Página nueva")) return "Página nueva sin cargar";
+  if (p.startsWith("Página en el portafolio")) return "Página no visible";
+  return p.length > 40 ? p.slice(0, 38) + "…" : p;
+}
+
+const esEspera = (x: Pendiente) => x.accion.startsWith("Esperar la revisión");
+const esPixel = (x: Pendiente) => x.problema.startsWith("Píxel");
+
+function Chip({ x }: { x: Pendiente }) {
+  const rojo = x.nivel === "rojo";
+  return (
+    <span
+      className="rounded-full px-2 py-0.5 text-[11px] font-semibold"
+      style={{
+        background: `color-mix(in srgb, ${rojo ? "var(--color-coral)" : "var(--color-amber)"} 15%, transparent)`,
+        color: rojo ? "var(--color-coral)" : "var(--color-amber)",
+      }}
+    >
+      {etiqueta(x)}
+    </span>
+  );
+}
+
+function FilaSujeto({ sujeto, items }: { sujeto: string; items: Pendiente[] }) {
+  return (
+    <li>
+      <details className="group">
+        <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1.5 px-4 py-3">
+          <span className="text-[14px] font-semibold">{sujeto}</span>
+          <span className="flex flex-wrap gap-1.5">
+            {items.map((x, i) => (
+              <Chip key={i} x={x} />
+            ))}
+          </span>
+          <span aria-hidden className="ml-auto text-muted transition-transform group-open:rotate-90">›</span>
+        </summary>
+        <ul className="flex flex-col gap-2 border-t border-line px-4 py-3 text-[13px]">
+          {items.map((x, i) => (
+            <li key={i}>
+              <span className="text-soft">{x.problema}</span>
+              <span className="block text-[12px] text-muted">Qué hacer: {x.accion}</span>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </li>
+  );
+}
+
 function PendientesLista({ pendientes }: { pendientes: Pendiente[] }) {
   if (!pendientes.length) return <p className="text-[13px] text-muted">No hay nada pendiente. El portafolio está al 100 %.</p>;
-  const grupos = [1, 2, 3].map((p) => ({ p, items: pendientes.filter((x) => x.prioridad === p) })).filter((g) => g.items.length);
+
+  const espera = pendientes.filter(esEspera);
+  const pixeles = pendientes.filter((x) => !esEspera(x) && esPixel(x));
+  const resto = pendientes.filter((x) => !esEspera(x) && !esPixel(x));
+
+  // Una fila por marca o activo, con todos sus problemas juntos; primero las que tienen algo en rojo
+  const porSujeto = new Map<string, Pendiente[]>();
+  for (const x of resto) porSujeto.set(x.sujeto, [...(porSujeto.get(x.sujeto) ?? []), x]);
+  const filas = [...porSujeto.entries()]
+    .map(([sujeto, items]) => ({ sujeto, items, rojo: items.some((x) => x.nivel === "rojo"), prioridad: Math.min(...items.map((x) => x.prioridad)) }))
+    .sort((a, b) => Number(b.rojo) - Number(a.rojo) || a.prioridad - b.prioridad);
+  const urgentes = filas.filter((f) => f.rojo);
+  const revisar = filas.filter((f) => !f.rojo);
+
   return (
-    <div className="flex flex-col gap-6">
-      {grupos.map((g) => (
-        <div key={g.p} className="flex flex-col gap-2">
-          <h3 className="text-[13px] font-semibold text-soft">
-            {PRIORIDAD[g.p]} <span className="font-normal text-muted">· {g.items.length}</span>
-          </h3>
-          <ol className="flex flex-col divide-y divide-line overflow-hidden rounded-card border border-line bg-panel">
-            {g.items.map((x, i) => (
-              <li key={i} className="flex gap-3 px-4 py-3">
-                <span
-                  aria-hidden
-                  className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
-                  style={{ background: x.nivel === "rojo" ? "var(--color-coral)" : "var(--color-amber)" }}
-                />
-                <div className="min-w-0">
-                  <p className="text-[14px]">
-                    <span className="font-semibold">{x.sujeto}</span>
-                    <span className="sr-only">{x.nivel === "rojo" ? " (falta)" : " (a revisar)"}</span>
-                    <span className="text-soft"> — {x.problema}</span>
-                  </p>
-                  <p className="mt-0.5 text-[12px] text-muted">Qué hacer: {x.accion}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      ))}
+    <div className="flex flex-col gap-4">
+      {urgentes.length > 0 && (
+        <ul className="flex flex-col divide-y divide-line overflow-hidden rounded-card border border-line bg-panel">
+          {urgentes.map((f) => (
+            <FilaSujeto key={f.sujeto} sujeto={f.sujeto} items={f.items} />
+          ))}
+        </ul>
+      )}
+
+      {(revisar.length > 0 || pixeles.length > 0 || espera.length > 0) && (
+        <ul className="flex flex-col divide-y divide-line overflow-hidden rounded-card border border-line bg-panel">
+          {revisar.map((f) => (
+            <FilaSujeto key={f.sujeto} sujeto={f.sujeto} items={f.items} />
+          ))}
+          {pixeles.length > 0 && (
+            <li>
+              <details className="group">
+                <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3">
+                  <span className="text-[14px] font-semibold">Píxeles sin eventos recientes</span>
+                  <span className="text-[13px] text-muted">{pixeles.length} marcas · solo importa si hacen campañas de venta</span>
+                  <span aria-hidden className="ml-auto text-muted transition-transform group-open:rotate-90">›</span>
+                </summary>
+                <ul className="grid gap-x-6 gap-y-1 border-t border-line px-4 py-3 text-[13px] sm:grid-cols-2">
+                  {pixeles.map((x, i) => (
+                    <li key={i} className="flex justify-between gap-3">
+                      <span>{x.sujeto}</span>
+                      <span className="text-muted">{x.problema.split(": ").pop()?.replace("Último evento hace ", "hace ")}</span>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </li>
+          )}
+          {espera.length > 0 && (
+            <li>
+              <details className="group">
+                <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3">
+                  <span className="text-[14px] font-semibold">Esperando a Meta</span>
+                  <span className="text-[13px] text-muted">{espera.length} nombres de WhatsApp en revisión · no tenés que hacer nada</span>
+                  <span aria-hidden className="ml-auto text-muted transition-transform group-open:rotate-90">›</span>
+                </summary>
+                <p className="border-t border-line px-4 py-3 text-[13px] text-soft">{espera.map((x) => x.sujeto).join(", ")}</p>
+              </details>
+            </li>
+          )}
+        </ul>
+      )}
     </div>
   );
 }
@@ -405,7 +498,7 @@ export function ConexionesView({ mapa, error }: { mapa: MapaPortafolio | null; e
       <Seccion
         id="pendientes"
         titulo="Para llegar al 100 %"
-        bajada="Ordenado por prioridad. Rojo es una conexión que falta; amarillo, algo a revisar o que está esperando a Meta."
+        bajada="Arriba lo que falta conectar; abajo lo que conviene revisar. Tocá una fila para ver qué hacer."
       >
         <PendientesLista pendientes={mapa.pendientes} />
       </Seccion>

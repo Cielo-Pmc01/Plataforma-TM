@@ -43,7 +43,7 @@ function hora(iso: string) {
 
 export function HistorialCambios({ cambios, acciones }: { cambios: CambioCuenta[]; acciones: AccionAgente[] }) {
   const [filtro, setFiltro] = useState<Filtro>("personas");
-  const [limite, setLimite] = useState(40);
+  const [limite, setLimite] = useState(12);
 
   const conRegistro = useMemo(() => {
     return cambios.map((c) => {
@@ -99,7 +99,7 @@ export function HistorialCambios({ cambios, acciones }: { cambios: CambioCuenta[
               aria-pressed={filtro === k}
               onClick={() => {
                 setFiltro(k);
-                setLimite(40);
+                setLimite(12);
               }}
               className={`rounded-md px-3 py-1.5 text-[12px] font-semibold cursor-pointer ${
                 filtro === k ? "bg-panel-3 text-text" : "text-muted hover:text-soft"
@@ -116,7 +116,7 @@ export function HistorialCambios({ cambios, acciones }: { cambios: CambioCuenta[
           <h3 className="mb-2 text-[13px] font-semibold text-muted first-letter:uppercase">{g.dia}</h3>
           <ul className="divide-y divide-line overflow-hidden rounded-card border border-line bg-panel">
             {g.items.map((c) => (
-              <li key={c.id} className="grid grid-cols-[52px_1fr] gap-3 px-4 py-3 sm:grid-cols-[60px_1fr_auto]">
+              <li key={c.id} className="grid grid-cols-[52px_1fr] gap-3 px-4 py-2.5 sm:grid-cols-[60px_1fr_auto]">
                 <span className="tabular pt-0.5 text-[12px] text-muted">{hora(c.event_time)}</span>
                 <div className="min-w-0">
                   <p className="text-[13px] font-semibold">{c.evento}</p>
@@ -148,7 +148,7 @@ export function HistorialCambios({ cambios, acciones }: { cambios: CambioCuenta[
       {total > limite && (
         <button
           type="button"
-          onClick={() => setLimite((l) => l + 40)}
+          onClick={() => setLimite((l) => l + 20)}
           className="self-start text-[13px] font-semibold text-cyan underline-offset-2 hover:underline cursor-pointer"
         >
           Mostrar más ({total - limite} restantes)

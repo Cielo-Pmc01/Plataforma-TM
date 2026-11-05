@@ -3,6 +3,7 @@ import { getCurrentPlatformUser } from "@/lib/platform";
 import { isControlOwner } from "@/lib/control/owner";
 import { LogoutButton } from "@/components/layout/LogoutButton";
 import { HeaderNav } from "@/components/layout/HeaderNav";
+import { MiAgenteButton } from "@/components/layout/MiAgenteButton";
 
 function Mark() {
   return (
@@ -32,7 +33,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <div className="hidden lg:block lg:flex-1">
             <HeaderNav showControl={owner} />
           </div>
+          {owner && (
+            <div className="hidden lg:block">
+              <MiAgenteButton />
+            </div>
+          )}
           <div className="flex items-center gap-3 lg:flex-col lg:items-stretch lg:gap-2 lg:border-t lg:border-line lg:pt-4">
+            {owner && (
+              <div className="lg:hidden">
+                <MiAgenteButton compacto />
+              </div>
+            )}
             <div className="text-right leading-tight lg:text-left">
               <div className="max-w-[160px] truncate text-[12px] font-semibold text-soft">{profile?.email ?? ""}</div>
               <div className="text-[11px] text-muted">{profile?.role ?? ""}</div>
