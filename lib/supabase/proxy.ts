@@ -30,7 +30,10 @@ export async function updateSession(request: NextRequest) {
   const isPublicRoute =
     request.nextUrl.pathname.startsWith("/login") ||
     request.nextUrl.pathname.startsWith("/design-system") ||
-    request.nextUrl.pathname.startsWith("/presentacion");
+    request.nextUrl.pathname.startsWith("/presentacion") ||
+    // La API y el MCP se autentican con su propio token (Bearer), no con la sesión
+    request.nextUrl.pathname.startsWith("/api/v1/") ||
+    request.nextUrl.pathname === "/api/mcp";
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();

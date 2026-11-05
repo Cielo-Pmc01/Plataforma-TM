@@ -57,7 +57,7 @@ export interface Activos {
   whatsapp: { id: string; nombre: string; relacion: string; numeros: NumeroWsp[] }[];
   pixeles: { id: string; nombre: string; ultimo_evento?: string; origen: string[] }[];
   cuentas: { id: string; nombre: string; estado: number; deuda: number; moneda: string; portafolio: string }[];
-  apps: { id: string; nombre: string }[];
+  apps: { id: string; nombre: string; relacion?: string; portafolios?: string[] }[];
 }
 
 export interface MapaPortafolio {

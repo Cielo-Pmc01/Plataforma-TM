@@ -319,11 +319,17 @@ function Inventario({ mapa }: { mapa: MapaPortafolio }) {
         </table>
       </Detalle>
 
-      <Detalle titulo="Apps del portafolio principal" cantidad={a.apps.length}>
+      <Detalle titulo="Apps" cantidad={a.apps.length}>
         <ul className="divide-y divide-line text-[13px]">
           {a.apps.map((x) => (
             <li key={x.id} className="flex justify-between gap-3 px-4 py-2">
-              <span>{x.nombre}</span>
+              <span>
+                {x.nombre}
+                <span className="block text-[11px] text-muted">
+                  {x.relacion === "compartida" ? "Compartida con " : x.relacion === "propia" ? "Propia de " : ""}
+                  {(x.portafolios ?? ["Turismo Patagonia"]).join(" y ")}
+                </span>
+              </span>
               <span className="tabular text-[11px] text-muted">{x.id}</span>
             </li>
           ))}
