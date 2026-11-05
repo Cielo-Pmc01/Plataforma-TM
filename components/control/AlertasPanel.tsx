@@ -142,7 +142,7 @@ export function AlertasPanel({ alertas }: { alertas: Alerta[] }) {
   const resueltas = grupos.filter((g) => g.estado !== "pendiente").length;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {error && (
         <p role="alert" className="rounded-lg border border-coral/40 bg-coral/10 px-3 py-2 text-[13px] text-coral">
           {error}
@@ -151,37 +151,36 @@ export function AlertasPanel({ alertas }: { alertas: Alerta[] }) {
       {SECCIONES.map((sec) => {
         const color = sec.nivel === "rojo" ? TONO_COLOR.critico : sec.nivel === "naranja" ? TONO_COLOR.atencion : TONO_COLOR.ok;
         const lista = grupos.filter((g) => g.nivel === sec.nivel && (verResueltas || g.estado === "pendiente"));
+        if (lista.length === 0 && sec.nivel !== "rojo") return null;
         return (
-          <section key={sec.nivel} aria-labelledby={`sec-${sec.nivel}`}>
-            <h3 id={`sec-${sec.nivel}`} className="mb-2 flex items-center gap-2 text-[14px] font-semibold">
+          // Lo crítico se ve abierto; atención y escalar quedan plegados para no marear
+          <details key={sec.nivel} open={sec.nivel === "rojo" ? true : undefined} className="group/sec">
+            <summary className="mb-2 flex cursor-pointer list-none items-center gap-2 text-[14px] font-semibold">
               <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: color }} />
               {sec.titulo}
-              <span className="tabular text-muted font-normal">{lista.length}</span>
-            </h3>
+              <span className="tabular font-normal text-muted">{lista.length}</span>
+              <span aria-hidden className="text-muted transition-transform group-open/sec:rotate-90">›</span>
+            </summary>
             {lista.length === 0 ? (
               <p className="text-[13px] text-muted">{sec.vacio}</p>
             ) : (
               <ul className="divide-y divide-line overflow-hidden rounded-card border border-line bg-panel">
                 {lista.map((g) => (
-                  <li key={g.key} className="flex flex-col gap-3 p-4 md:flex-row md:items-start md:justify-between">
+                  <li key={g.key} className="flex flex-col gap-2 px-4 py-3 md:flex-row md:items-center md:justify-between md:gap-4">
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[14px] font-semibold">{REGLA_TEXTO[g.regla] ?? g.regla}</span>
+                      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px]">
+                        <span className="font-semibold">{REGLA_TEXTO[g.regla] ?? g.regla}</span>
+                        <span className="truncate text-muted" title={`${g.cuenta}${g.campana ? ` / ${g.campana}` : ""}`}>
+                          · {g.campana || g.cuenta}
+                        </span>
                         {g.fase && <FaseChip fase={g.fase} />}
                         {g.sinResolver && (
-                          <span className="rounded-full bg-coral/15 px-2 py-0.5 text-[11px] font-semibold text-coral">
-                            Sin resolver desde hace 3 controles
-                          </span>
+                          <span className="rounded-full bg-coral/15 px-2 py-0.5 text-[11px] font-semibold text-coral">Repetida 3 controles</span>
                         )}
-                      </div>
-                      <p className="mt-1 text-[12px] text-muted">
-                        {g.cuenta}
-                        {g.campana ? ` / ${g.campana}` : ""}
                       </p>
-                      <p className="mt-2 text-[13px] text-soft">{g.dato}</p>
-                      <p className="mt-1 text-[13px]">
-                        <span className="text-muted">Propuesta: </span>
-                        {g.propuesta}
+                      <p className="mt-0.5 text-[12px] text-muted">
+                        {g.dato}
+                        <span className="text-soft"> → {g.propuesta}</span>
                       </p>
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
@@ -222,7 +221,7 @@ export function AlertasPanel({ alertas }: { alertas: Alerta[] }) {
                 ))}
               </ul>
             )}
-          </section>
+          </details>
         );
       })}
       {resueltas > 0 && (

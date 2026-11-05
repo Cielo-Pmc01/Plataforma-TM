@@ -20,7 +20,15 @@ function Seccion({ id, titulo, bajada, children }: { id: string; titulo: string;
   );
 }
 
-export function ControlView({ data, alineacion }: { data: ControlData; alineacion: ResumenAlineacion | null }) {
+export type PestanaControl = "hoy" | "campanas" | "agente";
+
+const PESTANAS: { id: PestanaControl; texto: string }[] = [
+  { id: "hoy", texto: "Hoy" },
+  { id: "campanas", texto: "Campañas" },
+  { id: "agente", texto: "Agente" },
+];
+
+export function ControlView({ data, alineacion, ver = "hoy" }: { data: ControlData; alineacion: ResumenAlineacion | null; ver?: PestanaControl }) {
 
   const pendientesCriticas = data.alertas.filter((a) => a.nivel === "rojo" && a.estado === "pendiente");
   // Las alertas de anuncios rechazados se cuentan una vez por campaña, como en el panel
@@ -48,7 +56,7 @@ export function ControlView({ data, alineacion }: { data: ControlData; alineacio
         <p className="text-[13px] text-muted">
           Último control del monitoreo {cuando(data.ultimoControl)}. {data.salud.length} campañas con entrega en los últimos 7 días.
         </p>
-        <h1 className="max-w-[24ch] text-[34px] font-semibold leading-[1.08] tracking-[-0.02em] sm:text-[44px]">{titular}</h1>
+        <h1 className={`max-w-[24ch] font-semibold leading-[1.08] tracking-[-0.02em] ${ver === "hoy" ? "text-[34px] sm:text-[44px]" : "text-[26px] sm:text-[30px]"}`}>{titular}</h1>
         {partes.length > 0 && <p className="text-[15px] text-soft">{partes.join(" y ")}.</p>}
         {data.errores.map((e) => (
           <p key={e} role="alert" className="rounded-lg border border-coral/40 bg-coral/10 px-3 py-2 text-[13px] text-coral">
@@ -57,6 +65,28 @@ export function ControlView({ data, alineacion }: { data: ControlData; alineacio
         ))}
       </header>
 
+      <nav aria-label="Vistas de Control" className="-mt-6 flex gap-1 border-b border-line">
+        {PESTANAS.map((p) => {
+          const n =
+            p.id === "hoy" ? total : p.id === "campanas" ? data.salud.length : 0;
+          return (
+            <Link
+              key={p.id}
+              href={p.id === "hoy" ? "/control" : `/control?ver=${p.id}`}
+              aria-current={ver === p.id ? "page" : undefined}
+              className={`-mb-px border-b-2 px-3 py-2.5 text-[14px] font-semibold transition-colors ${
+                ver === p.id ? "border-cyan text-text" : "border-transparent text-muted hover:text-soft"
+              }`}
+            >
+              {p.texto}
+              {n > 0 && <span className="tabular ml-1.5 text-[12px] font-normal text-muted">{n}</span>}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {ver === "hoy" && (
+        <>
       {alineacion && (
         <Link
           href="/control/conexiones"
@@ -86,37 +116,35 @@ export function ControlView({ data, alineacion }: { data: ControlData; alineacio
         </Link>
       )}
 
-      <Seccion id="saldos" titulo="Saldos" bajada="Dato del flujo de alertas de saldo, que revisa Meta cada 15 minutos.">
-        <SaldosStrip saldos={data.saldos} />
-      </Seccion>
+          <Seccion id="saldos" titulo="Saldos">
+            <SaldosStrip saldos={data.saldos} />
+          </Seccion>
+          <Seccion id="alertas" titulo="Alertas del último control" bajada="Aprobá lo que el agente puede ejecutar o descartá lo que no corresponde.">
+            <AlertasPanel alertas={data.alertas} />
+          </Seccion>
+        </>
+      )}
 
-      <Seccion
-        id="alertas"
-        titulo="Alertas del último control"
-        bajada="Aprobá lo que el agente puede ejecutar o descartá lo que no corresponde. Antes de actuar, el agente hace la revisión 360° del playbook."
-      >
-        <AlertasPanel alertas={data.alertas} />
-      </Seccion>
+      {ver === "campanas" && (
+        <Seccion
+          id="salud"
+          titulo="Salud de las campañas activas"
+          bajada="Costo por conversación contra su objetivo (o su promedio de 30 días). La marca en la barra es el presupuesto mínimo para que Meta aprenda."
+        >
+          <SaludTabla salud={data.salud} />
+        </Seccion>
+      )}
 
-      <Seccion
-        id="salud"
-        titulo="Salud de las campañas activas"
-        bajada="Cada campaña se compara con su objetivo de costo por conversación (o con su promedio de 30 días si todavía no tiene). El piso de aprendizaje es el presupuesto diario mínimo para unas 50 conversaciones por semana."
-      >
-        <SaludTabla salud={data.salud} />
-      </Seccion>
-
-      <Seccion id="agente" titulo="Acciones del agente">
-        <AccionesAgente acciones={data.acciones.slice(0, 30)} />
-      </Seccion>
-
-      <Seccion
-        id="cambios"
-        titulo="Cambios en las cuentas"
-        bajada="Historial de Meta de las últimas 48 horas en Ale Sopran y Sergio ADC. Un cambio sin registro del agente lo hizo una persona a mano o el agente se olvidó de anotarlo."
-      >
-        <HistorialCambios cambios={data.cambios} acciones={data.acciones} />
-      </Seccion>
+      {ver === "agente" && (
+        <>
+          <Seccion id="agente" titulo="Acciones del agente" bajada="Las que hizo juntas van en una sola tarjeta: tocá para ver el detalle.">
+            <AccionesAgente acciones={data.acciones.slice(0, 60)} />
+          </Seccion>
+          <Seccion id="cambios" titulo="Cambios en las cuentas" bajada="Historial de Meta de las últimas 48 horas. Un cambio sin registro del agente lo hizo una persona a mano.">
+            <HistorialCambios cambios={data.cambios} acciones={data.acciones} />
+          </Seccion>
+        </>
+      )}
     </div>
   );
 }
