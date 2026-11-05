@@ -14,16 +14,20 @@ const BASE: NavItem[] = [
   { href: "/contenido", label: "Contenido", hint: "Pipeline editorial" },
 ];
 
-const CONTROL: NavItem = { href: "/control", label: "Control", hint: "Alertas, salud y agente" };
+const CONTROL: NavItem[] = [
+  { href: "/control", label: "Control", hint: "Alertas, salud y agente" },
+  { href: "/control/conexiones", label: "Conexiones", hint: "Portafolios, IG y WhatsApp" },
+];
 
 export function HeaderNav({ showControl = false }: { showControl?: boolean }) {
   const pathname = usePathname();
-  const items = showControl ? [CONTROL, ...BASE] : BASE;
+  const items = showControl ? [...CONTROL, ...BASE] : BASE;
 
   return (
     <nav aria-label="Secciones" className="flex gap-1 lg:flex-col lg:gap-0.5">
       {items.map((s) => {
-        const active = pathname.startsWith(s.href);
+        // "/control" no se marca cuando estás en una subsección como "/control/conexiones"
+        const active = s.href === "/control" ? pathname === "/control" : pathname.startsWith(s.href);
         return (
           <Link
             key={s.href}

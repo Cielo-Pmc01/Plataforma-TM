@@ -1,4 +1,6 @@
+import Link from "next/link";
 import type { ControlData } from "@/lib/control/data";
+import type { ResumenAlineacion } from "@/lib/control/portafolio";
 import { cuando } from "@/lib/control/format";
 import { SaldosStrip } from "./SaldosStrip";
 import { AlertasPanel } from "./AlertasPanel";
@@ -18,7 +20,7 @@ function Seccion({ id, titulo, bajada, children }: { id: string; titulo: string;
   );
 }
 
-export function ControlView({ data }: { data: ControlData }) {
+export function ControlView({ data, alineacion }: { data: ControlData; alineacion: ResumenAlineacion | null }) {
 
   const pendientesCriticas = data.alertas.filter((a) => a.nivel === "rojo" && a.estado === "pendiente");
   // Las alertas de anuncios rechazados se cuentan una vez por campaña, como en el panel
@@ -54,6 +56,35 @@ export function ControlView({ data }: { data: ControlData }) {
           </p>
         ))}
       </header>
+
+      {alineacion && (
+        <Link
+          href="/control/conexiones"
+          className="group flex flex-col gap-3 rounded-card border border-line bg-panel p-4 transition-colors hover:border-line-2 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div>
+            <p className="text-[12px] text-muted">Conexiones del portafolio</p>
+            <p className="mt-0.5 text-[16px] font-semibold">
+              <span className="tabular">{alineacion.puntaje}%</span> alineado
+              <span className="font-normal text-soft">
+                {" "}· faltan {alineacion.rojos} {alineacion.rojos === 1 ? "conexión" : "conexiones"} y {alineacion.amarillos} a revisar
+              </span>
+            </p>
+          </div>
+          <div className="flex items-center gap-3 sm:w-[260px]">
+            <div className="h-2 flex-1 rounded-full bg-panel-3" aria-hidden>
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${alineacion.puntaje}%`,
+                  background: alineacion.puntaje >= 90 ? "var(--color-green)" : alineacion.puntaje >= 60 ? "var(--color-amber)" : "var(--color-coral)",
+                }}
+              />
+            </div>
+            <span className="text-[13px] text-muted group-hover:text-soft">Ver →</span>
+          </div>
+        </Link>
+      )}
 
       <Seccion id="saldos" titulo="Saldos" bajada="Dato del flujo de alertas de saldo, que revisa Meta cada 15 minutos.">
         <SaldosStrip saldos={data.saldos} />
