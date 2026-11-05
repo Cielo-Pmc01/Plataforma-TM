@@ -1,25 +1,58 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { createRecoveryClient } from "@/lib/supabase/recovery";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [signupDone, setSignupDone] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+
+  // Links that fall back to the Site URL land here after the auth redirect.
+  useEffect(() => {
+    const { hash } = window.location;
+    if (hash.includes("type=recovery") || hash.includes("error_code=otp_expired")) {
+      window.location.replace(`/reset-password${hash}`);
+    }
+  }, []);
+
+  function changeMode(next: "login" | "signup" | "forgot") {
+    setMode(next);
+    setError(null);
+    setSignupDone(false);
+    setResetSent(false);
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
+
+    if (mode === "forgot") {
+      const { error: resetError } = await createRecoveryClient().auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (resetError?.status === 429) {
+        setError("Se pidieron muchos emails seguidos. Esperá unos minutos y probá de nuevo.");
+      } else if (resetError) {
+        setError(`No se pudo enviar el email: ${resetError.message}`);
+      } else {
+        setResetSent(true);
+      }
+      setSubmitting(false);
+      return;
+    }
+
     const supabase = createClient();
 
     if (mode === "login") {
@@ -53,6 +86,11 @@ export default function LoginPage() {
           <p className="text-sm text-soft">
             Cuenta creada. Revisá tu email para confirmar y después iniciá sesión.
           </p>
+        ) : resetSent ? (
+          <p className="text-sm text-soft">
+            Si ese email tiene cuenta, te llegará un link para cambiar la contraseña. Revisá también
+            el correo no deseado.
+          </p>
         ) : (
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <label className="flex flex-col gap-1.5 text-xs font-bold text-soft">
@@ -66,6 +104,7 @@ export default function LoginPage() {
                 className="rounded-xl border border-line bg-panel-2 px-3 py-2 text-sm text-text font-sans font-normal outline-none focus:border-line-2"
               />
             </label>
+            {mode !== "forgot" && (
             <label className="flex flex-col gap-1.5 text-xs font-bold text-soft">
               Contraseña
               <span className="relative flex items-center">
@@ -98,21 +137,35 @@ export default function LoginPage() {
                 </button>
               </span>
             </label>
+            )}
 
             {error && <p className="text-xs font-bold text-coral">{error}</p>}
 
             <Button type="submit" variant="primary" disabled={submitting} className="w-full justify-center">
-              {submitting ? "Un momento…" : mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
+              {submitting
+                ? "Un momento…"
+                : mode === "login"
+                  ? "Iniciar sesión"
+                  : mode === "signup"
+                    ? "Crear cuenta"
+                    : "Enviar link"}
             </Button>
           </form>
         )}
 
+        {mode === "login" && (
+          <button
+            type="button"
+            onClick={() => changeMode("forgot")}
+            className="text-xs font-bold text-cyan self-center hover:underline cursor-pointer"
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+        )}
+
         <button
           type="button"
-          onClick={() => {
-            setMode(mode === "login" ? "signup" : "login");
-            setSignupDone(false);
-          }}
+          onClick={() => changeMode(mode === "login" ? "signup" : "login")}
           className="text-xs font-bold text-cyan self-center hover:underline cursor-pointer"
         >
           {mode === "login" ? "¿No tenés cuenta? Creá una" : "¿Ya tenés cuenta? Iniciá sesión"}
