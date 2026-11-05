@@ -1,33 +1,36 @@
 @import "tailwindcss";
 
+/*
+  Plataforma TM — paleta «lago glaciar»
+  Base azul pizarra (no negro), un solo acento turquesa glaciar y colores de estado
+  tomados del paisaje patagónico: lenga (crítico), ámbar (atención), bosque (ok).
+  Los nombres de token se mantienen para que las pantallas existentes hereden el cambio.
+*/
 :root {
-  /* Fondo + superficies — heredado de crm-cm */
-  --color-bg: #07080d;
-  --color-bg-2: #10131c;
-  --color-panel: rgba(18, 22, 32, 0.88);
-  --color-panel-2: rgba(255, 255, 255, 0.055);
-  --color-panel-3: rgba(255, 255, 255, 0.085);
-  --color-line: rgba(255, 255, 255, 0.12);
-  --color-line-2: rgba(255, 255, 255, 0.22);
+  --font-instrument: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --color-bg: #0f1c24;
+  --color-bg-2: #13232c;
+  --color-panel: #172a34;
+  --color-panel-2: rgba(233, 240, 242, 0.045);
+  --color-panel-3: rgba(233, 240, 242, 0.08);
+  --color-line: #24404c;
+  --color-line-2: #35596a;
 
-  /* Texto */
-  --color-text: #f6f7fb;
-  --color-muted: #9aa3b8;
-  --color-soft: #cad0df;
+  --color-text: #e9f0f2;
+  --color-muted: #8aa1ac;
+  --color-soft: #c3d2d8;
 
-  /* Acentos — degradés de crm-cm */
-  --color-cyan: #58e6ff;
-  --color-green: #80ffb5;
-  --color-lime: #d8ff63;
-  --color-coral: #ff6f61;
-  --color-amber: #ffc857;
-  --color-violet: #9b7cff;
-  --color-pink: #ff77bc;
+  --color-cyan: #6fd3c7;   /* acento: turquesa glaciar */
+  --color-green: #8bc98a;  /* ok: bosque */
+  --color-lime: #c9e27a;
+  --color-coral: #f0735a;  /* crítico: lenga */
+  --color-amber: #e9b54a;  /* atención */
+  --color-violet: #a99bea;
+  --color-pink: #e58fb4;
 
-  --shadow-card: 0 24px 70px rgba(0, 0, 0, 0.38);
+  --shadow-card: 0 1px 0 rgba(233, 240, 242, 0.04) inset, 0 12px 32px rgba(4, 12, 16, 0.35);
 
-  /* Radios — mas redondeado, estilo crm-meta-ads (pills + cards grandes) */
-  --radius-card: 20px;
+  --radius-card: 14px;
   --radius-pill: 999px;
 }
 
@@ -51,18 +54,43 @@
   --color-amber: var(--color-amber);
   --color-violet: var(--color-violet);
   --color-pink: var(--color-pink);
-  --font-sans: var(--font-manrope);
-  --font-mono: var(--font-jetbrains-mono);
+  --font-sans: var(--font-instrument);
+  --font-mono: var(--font-instrument);
   --radius-card: var(--radius-card);
   --shadow-card: var(--shadow-card);
 }
 
+html {
+  background-color: #0c171e;
+}
+
 body {
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(135deg, #07080d 0%, #10131c 38%, #111926 68%, #090a10 100%);
-  background-size: 38px 38px, 38px 38px, auto;
+  background-color: #0c171e;
+  background-image: linear-gradient(180deg, #13232c 0px, #0f1c24 360px, #0c171e 1200px);
+  background-repeat: no-repeat;
   color: var(--color-text);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01";
+}
+
+/* Números siempre alineados (antes se usaba una monoespaciada) */
+.font-mono,
+.tabular {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

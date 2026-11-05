@@ -70,7 +70,7 @@ export function BrandsRanking({ byBrandPeriod, onBrandClick }: Props) {
       )}
 
       <div className="flex items-center justify-between pt-2 mt-1 border-t border-line">
-        <span className="text-[11px] font-bold text-muted uppercase">Total mensajes</span>
+        <span className="text-[11px] font-bold text-muted">Total mensajes</span>
         <span className="font-mono text-sm font-bold text-cyan">{fmtN(total)}</span>
       </div>
 

@@ -6,7 +6,7 @@ export function SourcesView() {
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {sources.map((s) => (
         <Card key={s.name} className="flex flex-col gap-2">
-          <p className="text-[10px] font-bold uppercase text-muted">{s.type}</p>
+          <p className="text-[10px] font-bold text-muted">{s.type}</p>
           <h3 className="text-sm font-bold text-text">{s.name}</h3>
           <p className="text-xs text-soft">{s.summary}</p>
           <div className="flex flex-wrap gap-1.5 mt-1">

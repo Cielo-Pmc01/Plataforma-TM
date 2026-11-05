@@ -1,20 +1,11 @@
 import type { Metadata } from "next";
-import { Manrope, JetBrains_Mono } from "next/font/google";
+// Tipografía incluida en el proyecto (no depende de Google Fonts al compilar)
+import "@fontsource-variable/instrument-sans";
 import "./globals.css";
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Plataforma TM — Adventure Center",
-  description: "Meta Ads + Contenido CM en una sola plataforma",
+  description: "Centro de control de Meta Ads y contenido del área TM",
 };
 
 export default function RootLayout({
@@ -23,10 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es"
-      className={`${manrope.variable} ${jetbrainsMono.variable} h-full antialiased`}
-    >
+    <html lang="es" className="h-full antialiased">
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

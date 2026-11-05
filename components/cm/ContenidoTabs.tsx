@@ -26,7 +26,7 @@ export function ContenidoTabs() {
     <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <p className="text-[12px] font-bold uppercase tracking-wide text-muted">Contenido (CM)</p>
+          <p className="text-[12px] font-bold text-muted">Contenido (CM)</p>
           <h1 className="text-2xl font-extrabold mt-1">Content Command Center</h1>
         </div>
         <div className="flex gap-1 p-1 rounded-full bg-panel-2 border border-line flex-wrap">

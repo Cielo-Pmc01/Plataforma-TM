@@ -110,7 +110,7 @@ export function CampaignsSection({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-wide text-muted">Campañas</p>
+          <p className="text-[11px] font-bold text-muted">Campañas</p>
           <h2 className="text-lg font-extrabold mt-0.5">Performance por campaña · {periodLabel}</h2>
         </div>
         <div className="flex gap-1 p-1 rounded-full bg-panel-2 border border-line">
@@ -163,7 +163,7 @@ export function CampaignsSection({
 
       {accountNamesWithData.length > 1 && (
         <div className="flex gap-1.5 flex-wrap items-center">
-          <span className="text-[10px] font-bold uppercase text-muted mr-1">Cuenta</span>
+          <span className="text-[10px] font-bold text-muted mr-1">Cuenta</span>
           <button
             onClick={() => setCampAccountFilter("all")}
             className={`px-2.5 py-1 rounded-full text-[11px] font-bold cursor-pointer border transition ${
@@ -204,7 +204,7 @@ export function CampaignsSection({
       </div>
 
       <div className="rounded-card border border-line bg-panel overflow-hidden">
-        <div className="hidden sm:grid grid-cols-[1fr_70px_120px_90px_90px_80px] gap-2 px-4 py-2.5 border-b border-line text-[10px] font-bold uppercase text-muted">
+        <div className="hidden sm:grid grid-cols-[1fr_70px_120px_90px_90px_80px] gap-2 px-4 py-2.5 border-b border-line text-[10px] font-bold text-muted">
           <span>Campaña</span>
           <span>Marca</span>
           <span>Estado</span>
@@ -327,7 +327,7 @@ export function CampaignsSection({
                       ))}
                     {hasAds && (
                       <div className={hasAccounts ? "mt-2 pt-2 border-t border-line/50 flex flex-col gap-1.5" : "flex flex-col gap-1.5"}>
-                        <span className="text-[10px] font-bold uppercase text-muted">Anuncios</span>
+                        <span className="text-[10px] font-bold text-muted">Anuncios</span>
                         {adsEntries.map(([adName, ad]) => {
                           const asc = adStatusCfg(ad.status);
                           return (

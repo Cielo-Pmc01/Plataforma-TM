@@ -45,7 +45,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-6">
       <Card className="w-full max-w-sm flex flex-col gap-5">
         <div>
-          <p className="text-[12px] font-bold uppercase tracking-wide text-muted">Plataforma TM</p>
+          <p className="text-[12px] font-bold text-muted">Plataforma TM</p>
           <h1 className="text-xl font-extrabold mt-1">Meta Ads + Contenido CM</h1>
         </div>
 
