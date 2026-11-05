@@ -30,6 +30,7 @@ export interface SaludCampana {
   conversaciones_7d: number;
   costo_conv_7d: number | null;
   costo_referencia: number | null;
+  referencia_es_objetivo: boolean;
   frecuencia_7d: number | null;
   presupuesto_diario: number | null;
   piso_aprendizaje: number | null;
