@@ -40,12 +40,12 @@ export interface HeatCell {
 }
 
 export const PALETTE: [string, string][] = [
-  ["#58e6ff", "#9b7cff"],
-  ["#d8ff63", "#58e6ff"],
-  ["#ff77bc", "#ffc857"],
-  ["#ff6f61", "#9b7cff"],
-  ["#80ffb5", "#ffc857"],
-  ["#9b7cff", "#58e6ff"],
+  ["var(--color-cyan)", "var(--color-violet)"],
+  ["var(--color-lime)", "var(--color-cyan)"],
+  ["var(--color-pink)", "var(--color-amber)"],
+  ["var(--color-coral)", "var(--color-violet)"],
+  ["var(--color-green)", "var(--color-amber)"],
+  ["var(--color-violet)", "var(--color-cyan)"],
 ];
 
 export const content: ContentItem[] = [
@@ -175,25 +175,25 @@ export const sources: Source[] = [
 ];
 
 export const insights: [string, string, string][] = [
-  ["Pregunta más frecuente", "Los turistas brasileños preguntan primero por el clima y qué ropa llevar.", "#58e6ff"],
-  ["Objeción caliente", "El precio en USD frena al turista nacional — mostrar valor antes que costo.", "#ff6f61"],
-  ["Frase de cliente real", '"Nunca pensé que Bariloche en invierno iba a ser tan increíble."', "#d8ff63"],
-  ["Creencia a romper", "Bariloche no es solo para esquiadores — hay opciones para todos los presupuestos.", "#ff77bc"],
+  ["Pregunta más frecuente", "Los turistas brasileños preguntan primero por el clima y qué ropa llevar.", "var(--color-cyan)"],
+  ["Objeción caliente", "El precio en USD frena al turista nacional — mostrar valor antes que costo.", "var(--color-coral)"],
+  ["Frase de cliente real", '"Nunca pensé que Bariloche en invierno iba a ser tan increíble."', "var(--color-lime)"],
+  ["Creencia a romper", "Bariloche no es solo para esquiadores — hay opciones para todos los presupuestos.", "var(--color-pink)"],
 ];
 
 export const igMetrics: IGMetric[] = [
-  { label: "Vistas", value: "3.8M", delta: "+31%", detail: "Reels + stories 30d", color: "#58e6ff" },
-  { label: "Reach", value: "1.42M", delta: "+18%", detail: "Cuentas alcanzadas", color: "#d8ff63" },
-  { label: "Seguidores", value: "187.4K", delta: "+4.8K", detail: "Crecimiento neto", color: "#80ffb5" },
-  { label: "Interacción", value: "8.7%", delta: "+2.1pp", detail: "ER promedio 14 marcas", color: "#ff77bc" },
-  { label: "Comentarios", value: "18.2K", delta: "+44%", detail: "Señal de conversación", color: "#ffc857" },
-  { label: "Retención", value: "42%", delta: "+7pp", detail: "Reels completion avg", color: "#9b7cff" },
-  { label: "CTR bio", value: "3.9%", delta: "+0.8pp", detail: "Clicks desde perfil", color: "#ff6f61" },
-  { label: "Saves", value: "31.6K", delta: "+26%", detail: "Guardados", color: "#58e6ff" },
-  { label: "Shares", value: "12.9K", delta: "+19%", detail: "Compartidos", color: "#d8ff63" },
-  { label: "DMs / Consultas", value: "2.184", delta: "+38%", detail: "Conversaciones iniciadas", color: "#80ffb5" },
-  { label: "Visitas perfil", value: "96.7K", delta: "+22%", detail: "Tráfico al perfil", color: "#ff77bc" },
-  { label: "Frecuencia", value: "3.1x", delta: "-0.4", detail: "Exposición por cuenta", color: "#ffc857" },
+  { label: "Vistas", value: "3.8M", delta: "+31%", detail: "Reels + stories 30d", color: "var(--color-cyan)" },
+  { label: "Reach", value: "1.42M", delta: "+18%", detail: "Cuentas alcanzadas", color: "var(--color-lime)" },
+  { label: "Seguidores", value: "187.4K", delta: "+4.8K", detail: "Crecimiento neto", color: "var(--color-green)" },
+  { label: "Interacción", value: "8.7%", delta: "+2.1pp", detail: "ER promedio 14 marcas", color: "var(--color-pink)" },
+  { label: "Comentarios", value: "18.2K", delta: "+44%", detail: "Señal de conversación", color: "var(--color-amber)" },
+  { label: "Retención", value: "42%", delta: "+7pp", detail: "Reels completion avg", color: "var(--color-violet)" },
+  { label: "CTR bio", value: "3.9%", delta: "+0.8pp", detail: "Clicks desde perfil", color: "var(--color-coral)" },
+  { label: "Saves", value: "31.6K", delta: "+26%", detail: "Guardados", color: "var(--color-cyan)" },
+  { label: "Shares", value: "12.9K", delta: "+19%", detail: "Compartidos", color: "var(--color-lime)" },
+  { label: "DMs / Consultas", value: "2.184", delta: "+38%", detail: "Conversaciones iniciadas", color: "var(--color-green)" },
+  { label: "Visitas perfil", value: "96.7K", delta: "+22%", detail: "Tráfico al perfil", color: "var(--color-pink)" },
+  { label: "Frecuencia", value: "3.1x", delta: "-0.4", detail: "Exposición por cuenta", color: "var(--color-amber)" },
 ];
 
 export const growthData = [
@@ -202,35 +202,35 @@ export const growthData = [
 ];
 
 export const reachByFormat: FormatReachEntry[] = [
-  { label: "Reels", value: 92, color: "#58e6ff" },
-  { label: "Carrusel", value: 63, color: "#d8ff63" },
-  { label: "Stories", value: 48, color: "#ff77bc" },
-  { label: "Ads", value: 36, color: "#ffc857" },
-  { label: "Lives", value: 24, color: "#80ffb5" },
+  { label: "Reels", value: 92, color: "var(--color-cyan)" },
+  { label: "Carrusel", value: 63, color: "var(--color-lime)" },
+  { label: "Stories", value: 48, color: "var(--color-pink)" },
+  { label: "Ads", value: 36, color: "var(--color-amber)" },
+  { label: "Lives", value: 24, color: "var(--color-green)" },
 ];
 
 export const engagementMix: EngagementEntry[] = [
-  { label: "Likes", value: "54%", color: "#58e6ff" },
-  { label: "Comentarios", value: "19%", color: "#d8ff63" },
-  { label: "Saves", value: "14%", color: "#ff77bc" },
-  { label: "Shares", value: "8%", color: "#ffc857" },
-  { label: "DMs", value: "5%", color: "#ff6f61" },
+  { label: "Likes", value: "54%", color: "var(--color-cyan)" },
+  { label: "Comentarios", value: "19%", color: "var(--color-lime)" },
+  { label: "Saves", value: "14%", color: "var(--color-pink)" },
+  { label: "Shares", value: "8%", color: "var(--color-amber)" },
+  { label: "DMs", value: "5%", color: "var(--color-coral)" },
 ];
 
 export const retention: RetentionEntry[] = [
-  { label: "0-3s", value: 100, color: "#58e6ff" },
-  { label: "3-8s", value: 78, color: "#80ffb5" },
-  { label: "8-15s", value: 57, color: "#d8ff63" },
-  { label: "15-30s", value: 42, color: "#ffc857" },
-  { label: "Final", value: 31, color: "#ff6f61" },
+  { label: "0-3s", value: 100, color: "var(--color-cyan)" },
+  { label: "3-8s", value: 78, color: "var(--color-green)" },
+  { label: "8-15s", value: 57, color: "var(--color-lime)" },
+  { label: "15-30s", value: 42, color: "var(--color-amber)" },
+  { label: "Final", value: 31, color: "var(--color-coral)" },
 ];
 
 export const funnel: FunnelEntry[] = [
-  { label: "Reach", value: "1.42M", pct: 100, color: "#58e6ff" },
-  { label: "Visitas perfil", value: "96.7K", pct: 68, color: "#d8ff63" },
-  { label: "Clicks bio", value: "3.772", pct: 42, color: "#ffc857" },
-  { label: "Consultas DM", value: "2.184", pct: 31, color: "#ff77bc" },
-  { label: "Reservas", value: "248", pct: 18, color: "#80ffb5" },
+  { label: "Reach", value: "1.42M", pct: 100, color: "var(--color-cyan)" },
+  { label: "Visitas perfil", value: "96.7K", pct: 68, color: "var(--color-lime)" },
+  { label: "Clicks bio", value: "3.772", pct: 42, color: "var(--color-amber)" },
+  { label: "Consultas DM", value: "2.184", pct: 31, color: "var(--color-pink)" },
+  { label: "Reservas", value: "248", pct: 18, color: "var(--color-green)" },
 ];
 
 export const heatmap: HeatCell[] = [
