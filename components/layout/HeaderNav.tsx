@@ -3,30 +3,47 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const SECTIONS = [
-  { href: "/meta-ads", label: "Meta Ads", activeClass: "bg-panel-3 text-cyan" },
-  { href: "/contenido", label: "Contenido CM", activeClass: "bg-panel-3 text-violet" },
+interface NavItem {
+  href: string;
+  label: string;
+  hint: string;
+}
+
+const BASE: NavItem[] = [
+  { href: "/meta-ads", label: "Resultados", hint: "Marcas, campañas y excursiones" },
+  { href: "/contenido", label: "Contenido", hint: "Pipeline editorial" },
 ];
 
-export function HeaderNav() {
+const CONTROL: NavItem = { href: "/control", label: "Control", hint: "Alertas, salud y agente" };
+
+export function HeaderNav({ showControl = false }: { showControl?: boolean }) {
   const pathname = usePathname();
+  const items = showControl ? [CONTROL, ...BASE] : BASE;
 
   return (
-    <div className="flex gap-1 p-1 rounded-full bg-panel-2 border border-line">
-      {SECTIONS.map((s) => {
+    <nav aria-label="Secciones" className="flex gap-1 lg:flex-col lg:gap-0.5">
+      {items.map((s) => {
         const active = pathname.startsWith(s.href);
         return (
           <Link
             key={s.href}
             href={s.href}
-            className={`px-3 py-1.5 rounded-full text-xs font-bold transition ${
-              active ? s.activeClass : "text-muted hover:text-soft"
+            aria-current={active ? "page" : undefined}
+            className={`group rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors lg:py-2.5 ${
+              active ? "bg-panel-3 text-text" : "text-muted hover:bg-panel-2 hover:text-soft"
             }`}
           >
-            {s.label}
+            <span className="flex items-center gap-2">
+              <span
+                aria-hidden
+                className={`h-4 w-[3px] rounded-full ${active ? "bg-cyan" : "bg-transparent"}`}
+              />
+              {s.label}
+            </span>
+            <span className="hidden lg:block pl-[11px] text-[11px] font-normal text-muted">{s.hint}</span>
           </Link>
         );
       })}
-    </div>
+    </nav>
   );
 }

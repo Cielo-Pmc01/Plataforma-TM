@@ -64,7 +64,7 @@ export function BrandDrawer({ brand, data, byExcursion, onClose }: Props) {
 
         {excRows.length > 0 ? (
           <div className="flex flex-col gap-2">
-            <div className="text-[11px] font-bold uppercase text-muted">Top excursiones</div>
+            <div className="text-[11px] font-bold text-muted">Top excursiones</div>
             {excRows.map(([exc, v]) => {
               const pct = Math.round((v.msgs / maxExcMsgs) * 100);
               return (

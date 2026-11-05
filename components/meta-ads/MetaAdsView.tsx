@@ -21,7 +21,7 @@ type Tab = "dashboard" | "campaigns";
 function KPICard({ label, val, color, sub }: { label: string; val: string; color: string; sub: string }) {
   return (
     <Card className="flex flex-col gap-2">
-      <span className="text-[11px] font-bold uppercase text-muted">{label}</span>
+      <span className="text-[11px] font-bold text-muted">{label}</span>
       <span className="font-mono text-2xl font-semibold" style={{ color }}>
         {val}
       </span>
@@ -217,7 +217,7 @@ export function MetaAdsView() {
     <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <p className="text-[12px] font-bold uppercase tracking-wide text-muted">Meta Ads</p>
+          <p className="text-[12px] font-bold text-muted">Meta Ads</p>
           <h1 className="text-2xl font-extrabold mt-1">Performance de campañas</h1>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
@@ -385,7 +385,7 @@ export function MetaAdsView() {
                 <div className="text-xs text-muted py-6 text-center">Sin datos para el período</div>
               ) : (
                 <div className="flex flex-col">
-                  <div className="grid grid-cols-[1fr_50px_60px] gap-2 px-2 pb-2 border-b border-line text-[10px] font-bold uppercase text-muted">
+                  <div className="grid grid-cols-[1fr_50px_60px] gap-2 px-2 pb-2 border-b border-line text-[10px] font-bold text-muted">
                     <span>Campaña</span>
                     <button className="text-right cursor-pointer hover:text-soft" onClick={() => toggleSort("mensajes")}>
                       Msj {sortKey === "mensajes" ? (sortDir === "asc" ? "↑" : "↓") : ""}

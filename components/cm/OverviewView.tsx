@@ -54,7 +54,7 @@ export function OverviewView() {
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
         {igMetrics.map((m) => (
           <Card key={m.label} className="!p-3 flex flex-col gap-1">
-            <span className="text-[10px] font-bold uppercase text-muted">{m.label}</span>
+            <span className="text-[10px] font-bold text-muted">{m.label}</span>
             <strong className="text-lg font-extrabold" style={{ color: m.color }}>
               {m.value}
             </strong>
@@ -70,7 +70,7 @@ export function OverviewView() {
         <Card>
           <div className="flex items-start justify-between gap-3 mb-3">
             <div>
-              <p className="text-[11px] font-bold uppercase text-muted">Crecimiento 30 días</p>
+              <p className="text-[11px] font-bold text-muted">Crecimiento 30 días</p>
               <CardTitle className="!text-base mt-1">Seguidores, alcance e interacción</CardTitle>
               <p className="text-[11px] text-muted mt-1">Mock de evolución diaria para ver tendencia, no data real.</p>
             </div>
@@ -84,7 +84,7 @@ export function OverviewView() {
 
         <Card>
           <div className="mb-3">
-            <p className="text-[11px] font-bold uppercase text-muted">Mix engagement</p>
+            <p className="text-[11px] font-bold text-muted">Mix engagement</p>
             <CardTitle className="!text-base mt-1">Qué está generando acción</CardTitle>
             <p className="text-[11px] text-muted mt-1">Likes, comentarios, saves, shares y DMs.</p>
           </div>
@@ -113,7 +113,7 @@ export function OverviewView() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card>
           <div className="mb-3">
-            <p className="text-[11px] font-bold uppercase text-muted">Alcance por formato</p>
+            <p className="text-[11px] font-bold text-muted">Alcance por formato</p>
             <CardTitle className="!text-base mt-1">Reels vs carruseles vs stories</CardTitle>
           </div>
           <div className="flex items-end justify-between gap-2 h-[140px]">
@@ -130,7 +130,7 @@ export function OverviewView() {
 
         <Card>
           <div className="mb-3">
-            <p className="text-[11px] font-bold uppercase text-muted">Retención reels</p>
+            <p className="text-[11px] font-bold text-muted">Retención reels</p>
             <CardTitle className="!text-base mt-1">Caída por tramo</CardTitle>
           </div>
           <div className="flex flex-col gap-2.5">
@@ -148,7 +148,7 @@ export function OverviewView() {
 
         <Card>
           <div className="mb-3">
-            <p className="text-[11px] font-bold uppercase text-muted">CTR / perfil</p>
+            <p className="text-[11px] font-bold text-muted">CTR / perfil</p>
             <CardTitle className="!text-base mt-1">Ruta a DM y agenda</CardTitle>
           </div>
           <div className="flex flex-col gap-2.5">
@@ -170,7 +170,7 @@ export function OverviewView() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <div className="mb-3">
-            <p className="text-[11px] font-bold uppercase text-muted">Performance horario</p>
+            <p className="text-[11px] font-bold text-muted">Performance horario</p>
             <CardTitle className="!text-base mt-1">Heatmap de publicación</CardTitle>
             <p className="text-[11px] text-muted mt-1">Mock de intensidad por día/hora para decidir slots.</p>
           </div>
@@ -190,7 +190,7 @@ export function OverviewView() {
 
         <Card>
           <div className="mb-3">
-            <p className="text-[11px] font-bold uppercase text-muted">Operación de contenido</p>
+            <p className="text-[11px] font-bold text-muted">Operación de contenido</p>
             <CardTitle className="!text-base mt-1">Lo que hay que mirar hoy</CardTitle>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -215,7 +215,7 @@ export function OverviewView() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <div className="mb-3">
-            <p className="text-[11px] font-bold uppercase text-muted">Piezas ganadoras</p>
+            <p className="text-[11px] font-bold text-muted">Piezas ganadoras</p>
             <CardTitle className="!text-base mt-1">Contenido con más señal comercial</CardTitle>
           </div>
           <div className="flex flex-col gap-2.5">
@@ -235,7 +235,7 @@ export function OverviewView() {
 
         <Card>
           <div className="mb-3">
-            <p className="text-[11px] font-bold uppercase text-muted">Alertas + insights</p>
+            <p className="text-[11px] font-bold text-muted">Alertas + insights</p>
             <CardTitle className="!text-base mt-1">Control de calidad</CardTitle>
           </div>
           <div className="flex flex-col gap-2 mb-4">

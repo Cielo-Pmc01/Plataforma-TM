@@ -19,7 +19,7 @@ export function CalendarView() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-wide text-muted">Por marca</p>
+          <p className="text-[11px] font-bold text-muted">Por marca</p>
           <h2 className="text-lg font-extrabold mt-0.5">Calendario editorial</h2>
         </div>
         <select

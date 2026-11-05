@@ -20,7 +20,7 @@ export function PipelineView() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-wide text-muted">Workflow editorial</p>
+          <p className="text-[11px] font-bold text-muted">Workflow editorial</p>
           <h2 className="text-lg font-extrabold mt-0.5">Pipeline de producción</h2>
         </div>
         <select
