@@ -16,6 +16,7 @@ const BASE: NavItem[] = [
 
 const CONTROL: NavItem[] = [
   { href: "/control", label: "Control", hint: "Alertas, salud y agente" },
+  { href: "/control/agente", label: "Agente", hint: "Chateá con tu agente" },
   { href: "/control/conexiones", label: "Conexiones", hint: "Portafolios, IG y WhatsApp" },
   { href: "/control/api", label: "API y MCP", hint: "Conectar agentes y sistemas" },
 ];
