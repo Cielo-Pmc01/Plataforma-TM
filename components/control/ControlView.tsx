@@ -4,6 +4,7 @@ import { SaldosStrip } from "./SaldosStrip";
 import { AlertasPanel } from "./AlertasPanel";
 import { SaludTabla } from "./SaludTabla";
 import { AccionesAgente } from "./AccionesAgente";
+import { HistorialCambios } from "./HistorialCambios";
 
 function Seccion({ id, titulo, bajada, children }: { id: string; titulo: string; bajada?: string; children: React.ReactNode }) {
   return (
@@ -75,7 +76,15 @@ export function ControlView({ data }: { data: ControlData }) {
       </Seccion>
 
       <Seccion id="agente" titulo="Acciones del agente">
-        <AccionesAgente acciones={data.acciones} />
+        <AccionesAgente acciones={data.acciones.slice(0, 30)} />
+      </Seccion>
+
+      <Seccion
+        id="cambios"
+        titulo="Cambios en las cuentas"
+        bajada="Historial de Meta de las últimas 48 horas en Ale Sopran y Sergio ADC. Un cambio sin registro del agente lo hizo una persona a mano o el agente se olvidó de anotarlo."
+      >
+        <HistorialCambios cambios={data.cambios} acciones={data.acciones} />
       </Seccion>
     </div>
   );

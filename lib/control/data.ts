@@ -54,6 +54,7 @@ export interface AccionAgente {
   creado_at: string;
   cuenta: string;
   campana: string;
+  objeto_id: string;
   accion: string;
   nivel_autonomia: number;
   motivo: string;
@@ -64,11 +65,24 @@ export interface AccionAgente {
   nota_resultado: string | null;
 }
 
+export interface CambioCuenta {
+  id: number;
+  cuenta: string;
+  event_time: string;
+  actor: string | null;
+  evento: string;
+  objeto_tipo: string | null;
+  objeto_id: string;
+  objeto_nombre: string | null;
+  detalle: string | null;
+}
+
 export interface ControlData {
   alertas: Alerta[];
   salud: SaludCampana[];
   saldos: Saldo[];
   acciones: AccionAgente[];
+  cambios: CambioCuenta[];
   ultimoControl: string | null;
   errores: string[];
 }
@@ -94,17 +108,25 @@ export async function loadControlData(): Promise<ControlData> {
   const db = supabase.schema("meta_ads");
   const errores: string[] = [];
 
-  const [alertasRes, saludRes, saldosRes, accionesRes] = await Promise.all([
+  const hace48h = new Date(Date.now() - 48 * 3600 * 1000).toISOString();
+  const [alertasRes, saludRes, saldosRes, accionesRes, cambiosRes] = await Promise.all([
     db.from("monitoreo_alertas").select("*").order("creado_at", { ascending: false }).limit(400),
     db.from("salud_campanas").select("*").order("creado_at", { ascending: false }).limit(300),
     db.from("balance_alert_state").select("*"),
-    db.from("acciones_agente").select("*").order("creado_at", { ascending: false }).limit(30),
+    db.from("acciones_agente").select("*").order("creado_at", { ascending: false }).limit(100),
+    db
+      .from("historial_cambios")
+      .select("id, cuenta, event_time, actor, evento, objeto_tipo, objeto_id, objeto_nombre, detalle")
+      .gte("event_time", hace48h)
+      .order("event_time", { ascending: false })
+      .limit(600),
   ]);
 
   if (alertasRes.error) errores.push("No se pudieron leer las alertas: " + alertasRes.error.message);
   if (saludRes.error) errores.push("No se pudo leer la salud de campañas: " + saludRes.error.message);
   if (saldosRes.error) errores.push("No se pudieron leer los saldos: " + saldosRes.error.message);
   if (accionesRes.error) errores.push("No se pudieron leer las acciones del agente: " + accionesRes.error.message);
+  if (cambiosRes.error) errores.push("No se pudo leer el historial de cambios: " + cambiosRes.error.message);
 
   const alertas = ultimaTanda((alertasRes.data ?? []) as Alerta[]);
   const salud = ultimaTanda((saludRes.data ?? []) as SaludCampana[]).map((s) => ({
@@ -151,6 +173,7 @@ export async function loadControlData(): Promise<ControlData> {
     salud,
     saldos,
     acciones: (accionesRes.data ?? []) as AccionAgente[],
+    cambios: (cambiosRes.data ?? []) as CambioCuenta[],
     ultimoControl: alertas[0]?.creado_at ?? salud[0]?.creado_at ?? null,
     errores,
   };
